@@ -45,8 +45,8 @@ exec_command(){
     local cmd=$1
     local argv=$@
 
+    #split cmd from opts:
     local opts=''
-    #split between command and options:
     #if removing dash makes no diff
     #then match command; splice options
     #else match cmd-opt; splice options
@@ -64,61 +64,40 @@ exec_command(){
 set_options() {
     local OPTIND
     local ret=0
-    echo "parsing options $*"
-    while getopts ":hvsl:b:m:u:c:k:n:o:t:d:" opt; do
-        case "$opt" in
+    # echo "parsing options $*"
+    while getopts ":hvsl:b:m:u:c:k:n:o:t:d:" key; do
+        case "$key" in
             #normal options w/ or w/o args
             n) set_option "name"   "$OPTARG";;
             o) set_option "output" "$OPTARG";;
             t) set_option "target" "$OPTARG";;
             #command shortcut option handling #LBMUCK
-            #add option/command here & get_command & get_shortcut
+            #add option/command here & get_command
             l|b|m|u|c|k|?)
-                _opt="$opt"
-                #when getopts can't parse option, it sets opts to ':'
+                local flag="$key" #shortcut flag
+                #when getopts can't parse option, opts=':'
                 #check for this to make the switch case handle
-                #shortcuts with required options and optional options
-                [[ $_opt == ':' ]] && _opt="$1" || _opt="-$opt"
-
-                local argval="$OPTARG"
-                [[ "$OPTARG" == "${1#*-}" ]] && argval=''
-
-                # echo "has value $has_value - $OPTARG"
-                # def _has_value $has_value
-                # def _argval $argval
-                # [[ "$has_value" == 'true' ]] && def argval "$OPTARG" || def argval ''
-                # echo "$argval"
-                # def set_sc_opt set_shortcut_opt
-                #nested single quotes work XD + argval at the end, maybe empty
-                # get_sc_opt=$(fn label code '$set_sc_opt '$label' '$code' '$argval'')
-                case "$_opt" in
-                    #TODO: install codebase before deleting this
-                    #set ret to errcode if option is required
-                    #if the value is the flag itself, then no arg value
-                    # -c) [[ "$OPTARG" != "${1#*-}" ]] && set_option "comment" "$OPTARG" || ret=14;;
-                    # -k) [[ "$OPTARG" != "${1#*-}" ]] && set_option "name"    "$OPTARG" || ret=0;;
-                    # *)  [[ "$OPTARG" != "${1#*-}" ]] && set_option "target"  "$OPTARG" || ret=0;;
-                    # -c) set_shortcut_opt "$1" "$OPTARG" "comment" 14;;
-                    # -k) set_shortcut_opt "$1" "$OPTARG" "name" 0;;
-                    # *) set_shortcut_opt "$1" "$OPTARG" "target" 0;;
-                    # -c) $get_sc_opt 'comment' 14;;
-                    # -k) $get_sc_opt 'name'     0;;
-                    # *)  $get_sc_opt 'target'   0;;
-                    -c) set_option 'comment' "$argval" 14;;
-                    -k) set_option 'name' "$argval";;
-                    *) set_option 'target' "$argval";;
+                #shortcuts with required options and no options
+                [[ $flag == ':' ]] && flag="$1" || flag="-$key"
+                #get arg value 
+                local val="$OPTARG"
+                #only if not a shortcut command
+                [[ "$OPTARG" == "${1#*-}" ]] && val=''
+                #set shortcut option values
+                case "$flag" in
+                    -c) set_option 'comment' "$val" 14;;
+                    -k) set_option 'name'    "$val";;
+                    *)  set_option 'target'  "$val";;
                 esac
-                # [ $ret -eq 0 ] && get_shortcut "$_opt" || ret=$?
-                return $ret;;   
+                return $ret;;
             #other options
             d) set_option "_debug" "$OPTARG";;
         esac
-        # ret=$?
+        ret=$?
         #break on error
-        # [ $ret -gt 0 ] && break
+        [ $ret -gt 0 ] && break
     done
-    # [ $ret -eq 0 ] && shift "$((OPTIND-1))"
-    shift "$((OPTIND-1))"
+    [ $ret -eq 0 ] && shift "$((OPTIND-1))"
     return $ret
 }
 #TODO: read command configuration from
@@ -128,13 +107,18 @@ set_options() {
 #get_command :: String -> (()IO -> Int)
 get_command(){
     local ret=0
+    local cmd="$@"
+    #shortcut map
+    case "$1" in
+        -l) cmd='ls';;
+        -b) cmd='br';;
+        -m) cmd='mr';;
+        -u) cmd='up';;
+        -c) cmd='ci';;
+        -k) cmd='co';;
+    esac
     #command map
-    # echo "parsing command $@"
-    case "$@" in
-        #hybrid shortcuts #LBMUCK
-        #delegates to option parser
-        -l|-b|-m|-u|-c|-k) 
-            get_shortcut "$@";;
+    case $cmd in
         #optionless commands
         stats|stat|s)   cmd_stats;;
         ui)             cmd_ui;;
@@ -161,20 +145,6 @@ get_command(){
     [[ "$_ret" -gt 0 ]] && ret=$_ret
     return $ret
 }
-
-get_shortcut(){
-    sc=''
-    #LBMUCK
-    case "$1" in
-        -l) sc='cmd_list';;
-        -b) sc='cmd_branch';;
-        -m) sc='cmd_merge';;
-        -u) sc='cmd_update';;
-        -c) sc='cmd_checkin';;
-        -k) sc='cmd_checkout';;
-    esac
-    [ -n "$sc" ] && eval $sc || return $?
-}
 #hybrid shortcuts with no 
 #environment dependencies
 #get_info :: $@ -> IO()
@@ -186,28 +156,12 @@ get_info(){
 }
 
 set_option(){
-    #TODO: FIX MAYBE
-    # `maybe "$1"` && `maybe "$2"` \
-    # && kvset "$1" "$2" && \
-    # return 0 || return 1
     local ret=14
     [ -n "$3" ] && ret=$3
-
-    echo "setting options $1 to $2"
-    if [ -n "$2" ]; then
-        kvset "$1" "$2"
-        return 0
-    else
-        return $ret
-    fi
+    # echo "setting options $1 to $2"
+    [ -n "$2" ] && kvset "$1" "$2" \
+    && return 0 || return $ret
 }
-
-# set_shortcut_opt(){
-#     local ret=0
-#     # [[ "$1" == 'true' ]] && set_option "$2" "$4" || ret=$3
-#     set_option "$1" "$3" || ret=$2
-#     return $ret
-# }
 
 clear_options(){
     kvset branch ""
