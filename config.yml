@@ -1,0 +1,6 @@
+targets:
+  default : core/master
+  test : portal/release
+repos:
+  - core : https://git.autodesk.com/portal-core/ui.git
+  - portal : https://git.autodesk.com/portal/ui.git
