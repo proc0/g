@@ -60,7 +60,7 @@ cmd_checkin(){
         echo 'Already up to date.'
     else
         git add -A .
-        git commit -m $msg
+        git commit -m "$msg"
         git push `get_current_repo` `get_current_branch`
     fi
     return $ret
