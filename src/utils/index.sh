@@ -41,6 +41,7 @@ get_current_repo(){
 #check command hard dependencies
 #env_ready :: IO() -> ERROR_LABEL
 env_ready(){
+    #clone is an exception that doesn't need a repo
     [[ "$1" == 'cl' ]] && return 0
     #TODO: refactor to use error codes instead of text
     #check config file
