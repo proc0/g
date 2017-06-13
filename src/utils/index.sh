@@ -14,17 +14,17 @@ get_status(){
 
 get_status_code(){
     stat=`git status`
-    code='GENERIC'
+    code=GENERIC
     if [[ $stat =~ .*modified.* ]]; then
-        code='MODIFIED'
+        code=MODIFIED
     elif [[ $stat =~ .*up\-to\-date.* ]]; then
-        code='SYNCED'      
+        code=SYNCED      
     elif [[ $stat =~ .*branch\ is\ behind* ]]; then
-        code='BEHIND'
+        code=BEHIND
     elif [[ $stat =~ .*is\ ahead* ]]; then
-        code='AHEAD'
+        code=AHEAD
     fi
-    echo $code
+    echo "$code"
 }
 
 get_current_branch(){
