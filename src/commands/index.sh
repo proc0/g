@@ -15,7 +15,7 @@ cmd_list(){
     local get_paths=$(fn a '[[ $a == *\/* ]]')
     local format_path=$(fn a 'echo "${a##*/}"')
     #lets put it all together
-    filter $get_paths $branches | map $format_path || ret=$?
+    filter $get_paths "$branches" | map $format_path || ret=$?
     return $ret
 }
 #cmd_branch :: () -> IO Int()
@@ -55,19 +55,22 @@ cmd_update(){
 }
 
 cmd_checkin(){
-    local msg=`kvget comment`
     local ret=0
-    if [ -z "$msg" ]; then
-        #no comment value
-        ret=14
-    elif [[ `get_status_code` == 'SYNCED' ]]; then
+
+    local msg=`kvget comment`
+    #no comment value
+    [ -z "$msg" ] && ret=14
+
+    if [[ `get_status_code` == 'SYNCED' ]]; then
         echo "`const TXT UP_TO_DATE`"
-    else
+    elif [ -n "$msg" ]; then
         git add -A .
         git commit -m "$msg"
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_stats
     fi
+     _ret=$? #update ret if needed
+    [[ "$_ret" -gt 0 ]] && ret=$_ret
     return $ret
 }
 
@@ -172,10 +175,14 @@ cmd_clone(){
 
 cmd_request(){
     local ret=0
+    local repo=`get_current_repo`
     local branch=`get_current_branch`
     local remote_target=`kvget target`
-    local url="https://git.autodesk.com/portal-core/ui/compare/$remote_target...$branch"
+    #TODO: get name of remote repo
+    local remote_repo_name=`get_remote_repo_name`
+    local url="https://git.autodesk.com/$remote_repo_name/ui/compare/$remote_target...$repo:$branch?expand=1"
     echo "Opening $url..."
+    #TODO: outsource this to config to open with w/e
     open -a "/Applications/Google Chrome.app" "$url" || ret=$?
     return $ret
 }

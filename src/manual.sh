@@ -4,26 +4,43 @@ _ifs=$IFS
 export IFS=:
 
 usage="
-NAME
-   ${0##*/} -- git command line workflow toolkit
+### NAME
+| ${0##*/} | -- git command line workflow toolkit |
+| -------- | ------------------------------------ |
+### SYNOPSIS
+| ${0##*/} | COMMAND | (-)OPTION(*) ... [VALUE] | 
+|----------|---------|----------------------|
+|          | h, v    |
+|          | s, ui   |          
+|          | ls, br, mr, up | -t [TARGET] |
+|          | ci, co  | -m* [MESSAGE] -n [NAME] -t [TARGET] |
+|          | in, cl  | -t* [TARGET] | -o [OUTPUT] |   
+|          | pr, df  | -t* [TARGET] |
 
-SYNOPSIS
-    ${0##*/} [ COMMAND ]        [ -OPTION ... ] 
-      [ h, v ]
-      [ s, ui ]          
-      [ ls, br, mr, up ] [ -t TARGET ]
-      [ ci, co ]         [ -t TARGET ]  [ -m MESSAGE* | -n NAME ]
-      [ in, cl ]         [ -t TARGET* ] [ -o OUTPUT ]   
-      [ pr, df ]         [ -t TARGET* ]
-
-DESCRIPTION
-    A set of git recipies wrapped in short shell commands.
+### DESCRIPTION
+    A set of git worfklows wrapped in shortcut commands.
     
-COMMANDS -------------------------------------------------------------+
-  |             DESCRIPTION          ALIAS       --OPTION [REQ*, =DEFAULTS]
-  +-------------------------------------------------------------------+
-    help        Show this help        -h|h                  
-                message.
+### COMMANDS
+| NAME        | ALIAS   | (-)OPTION(*)=DEFAULT       | DESCRIPTION 
+|-------------|---------|----------------------------|-------------
+| help        | -h\|h   |                            | Show this help message.
+| version     | -v\|v   |                            | Show current version. 
+| status      | st\|s   |                            | Show ui state and git status
+| list        | ls\|-l  | -t<target>=CURRENT_REPO    |
+| branch      | br\|-b  | -t<target>=INTERACTIVE     |
+| merge       | mr\|-m  | -t<target>=REMOTE_TARGET   |
+| update      | up\|-u  | -t<target>=REMOTE_REPOS    |
+| checkin     | ci\|-c\*| __-c<comment>*__           |
+|             |         | -t<target>=REMOTE_TARGET   |       
+| checkout    | co\|-k  | -t<target>=REMOTE_TARGET   |
+|             |         | -n<name>=BASE_TIMESTAMP    |
+| install     | in      | __-t<target>*__            |
+|             |         | -o<output>=CURRENT_DIR     |
+| clone       | cl      | __-t<target>*__            |
+|             |         | -o<output>=CURRENT_DIR     |
+| request     | pr      | __-t<target>*__            |
+| diff        | df      | __-t<target>*__            |
+| ui          | ui      |                            |
 
     version     Show version.         -v|v
 
@@ -114,17 +131,5 @@ OPTIONS -------------------------------------------------------------+
                             command will clone and run scripts to 
                             initialize the codebase.
 
-EXAMPLES -----------------------------------------------------------+
-  |                             COMMAND          ARGUMENTS          +
-  +-----------------------------------------------------------------+    
-    Display current context     ${0##*/} s      
-    state (including git 
-    stats and config vars)
-
-    Displays version            ${0##*/} v
-
-    Initialize git repo and
-    remote configuration,       ${0##*/} i        -r REPO_NAMES
-    and run init scripts                          -o OUTPUT_DIR
 "
 export IFS=$_ifs
