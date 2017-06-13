@@ -88,7 +88,8 @@ set_options() {
                 case "$flag" in
                     #set_option :: Label -> Value -> ErrorCode
                     -c) set_option 'comment' "$val" 14;;
-                    -k) set_option 'name'    "$val" && set_option 'target' "`get_current_repo`";;
+                    -k) set_option 'name'    "$val" && \
+                        set_option 'target'  "`get_current_repo`";;
                     *)  set_option 'target'  "$val";;
                 esac
                 return $ret;;
