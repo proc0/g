@@ -21,6 +21,8 @@ get_status_code(){
         code='SYNCED'      
     elif [[ $stat =~ .*branch\ is\ behind* ]]; then
         code='BEHIND'
+    elif [[ $stat =~ .*is\ ahead* ]]; then
+        code='AHEAD'
     fi
     echo $code
 }
