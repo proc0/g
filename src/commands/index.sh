@@ -4,49 +4,53 @@ ${GREEN}`get_current_repo`/`get_current_branch` | `get_status`
 ─────────────────────────────────────────────${NONE}"
 }
 
-#cmd_list :: () -> String
+#cmd_list :: () -> IO Int()
 cmd_list(){
     local ret=0
     #list git branches and convert to list
-    get_branches=$(fn repo 'git ls-remote --heads $repo;')
-    branches=$(list $(echo "`$get_branches $(kvget target || get_current_repo)`"))
+    local target=$(kvget target || get_current_repo)
+    local get_branches=$(fn repo 'git ls-remote --heads $repo;')
+    local branches=$(list $(echo "`$get_branches $target`"))
     #discard branch ids, and format path to just branch name
-    get_paths=$(fn a '[[ $a == *\/* ]]')
-    format_path=$(fn a 'echo "${a##*/}"')
+    local get_paths=$(fn a '[[ $a == *\/* ]]')
+    local format_path=$(fn a 'echo "${a##*/}"')
     #lets put it all together
     filter $get_paths $branches | map $format_path || ret=$?
     return $ret
 }
-
+#cmd_branch :: () -> IO Int()
 cmd_branch(){
     local ret=0
-    input_branch=`kvget target`
+
+    local input_branch=`kvget target`
     if [ -n "$input_branch" ]; then
         (git checkout "$input_branch" || ret=$?) &&
-        (git pull `get_current_repo` "$input_branch" || ret=$?)
+        (git pull "`get_current_repo`" "$input_branch" || ret=$?)
     else
-        echo -ne "⌛  fetching branch list..." &&
+        echo -ne "`const TXT FETCHING_BRANCH`" &&
         list_branches || ret=$?
     fi
+
     return $ret
 }
 
 cmd_merge(){
+    local ret=0
     #TODO: check if conflicts, offer user to revert
     # cmd_revert="git revert -m 1 [sha_of_C9]"
-    cur_repo=`get_current_repo`
-    cur_branch=`get_current_branch`
-    target="$cur_repo/$cur_branch"
-    if [ -n "$target" ]; then
-        git merge $target
-    fi
+    local cur_repo=`get_current_repo`
+    local cur_branch=`get_current_branch`
+    local target="$cur_repo/$cur_branch"
+    [ -n "$target" ] && git merge "$target" || ret=$?
     cmd_stats
+    return $ret
 }
 
 cmd_update(){
-    echo -e "⌛  fetching remote data..."
+    echo -e "`const TXT FETCHING_DATA`"
+    #TODO: abstract getting list of repos from config
     local repo_list=$(list `kvget repos`)
-    map $(fn a 'echo \"updating $a...\" && git fetch $a') $repo_list
+    map $(fn a 'echo \"updating $a...\" && git fetch $a') "$repo_list"
     cmd_stats
 }
 
@@ -57,11 +61,12 @@ cmd_checkin(){
         #no comment value
         ret=14
     elif [[ `get_status_code` == 'SYNCED' ]]; then
-        echo 'Already up to date.'
+        echo "`const TXT UP_TO_DATE`"
     else
         git add -A .
         git commit -m "$msg"
-        git push `get_current_repo` `get_current_branch`
+        git push "`get_current_repo`" "`get_current_branch`"
+        cmd_stats
     fi
     return $ret
 }
@@ -73,8 +78,8 @@ cmd_checkout(){
 
     if [ -n "$target" -a -n "$name" ]; then
         echo "checking out $target $name"
-        git checkout -b $name
-        git push -u $target $name
+        git checkout -b "$name"
+        git push -u "$target" "$name"
         cmd_stats
     else
         ret=23
@@ -83,41 +88,45 @@ cmd_checkout(){
 }
 
 list_branches(){
-    #setup
     local ret=0
-    local sep=":"
+    #setup
     local branches=`cmd_list`
     local br_arr=(`echo $branches`)
     local br_len=${#br_arr[@]}
-
-    #create new list to enumerate branches for easier selection
+    #create new list to enumerate 
+    #branches for easier selection
+    local sep=":"
     local N=$(seq 1 $br_len)
-    local branch_list=(`echo $(_zip "$N" "$branches" $sep)`)
-    local branch_len=${#branch_list[@]}
+    local br_list=$(_zip "$N" "$branches" "$sep")
+    local branch_list=(`echo $br_list`)
 
     export IFS=:
     local display_list=""
-    #harvest branch list
+    local branch_len=${#branch_list[@]}
+    #compute branch list
     for ((i=0; i<$branch_len; i++)); do
         read -ra entry <<<"${branch_list[$i]}"
-        #display entry with selection #
-        display_list="$display_list
-${YELLOW}${entry[0]}${NONE}) ${entry[1]}"
+        local num="${YELLOW}${entry[0]}${NONE}"
+        local branch_name="${entry[1]}"
+        #building list...
+        display_list="$display_list\n$num) $branch_name"
     done
 
+    #get user input
+    query_user="${GREEN}`const TXT SELECT_BRANCH`${NONE}"
     #echo -e first to preserve colors
-    read -p "$(echo -e "$display_list
-${GREEN}Please select a branch number:${NONE}")" br_num
+    read -p "$(echo -e "$display_list\n$query_user")" br_num
+
     #check user input
     if [[ "$br_num" -gt 0 && "$br_num" -lt "$branch_len+1" ]]; then
         #parse branch name
         select_entry=(${branch_list[$br_num-1]})
-        select_branch="${select_entry[1]}"
+        select_branch=${select_entry[1]}
         #checkout and try to update branch
         #TODO: change pull to an invoke cmd_update or cmd_pull
-        [ -n $select_branch ] && \
-        (git checkout $select_branch || ret=$?) && \
-        (git pull `get_current_repo` $select_branch || ret=$?) \
+        [ -n "$select_branch" ] && \
+        (git checkout "$select_branch" || ret=$?) && \
+        (git pull "`get_current_repo`" "$select_branch" || ret=$?) \
         || ret=23 #bad branch name
     fi
     #reset IFS?
@@ -162,11 +171,13 @@ cmd_clone(){
 }
 
 cmd_request(){
-    # local_branch="`get_current_repo`/`get_current_branch`"
-    url="https://git.autodesk.com/portal-core/ui/compare/`get_current_branch`...`kvget target`"
-    echo $url
-    open -a "/Applications/Google Chrome.app" "$url"
-    return 0
+    local ret=0
+    local branch=`get_current_branch`
+    local remote_target=`kvget target`
+    local url="https://git.autodesk.com/portal-core/ui/compare/$remote_target...$branch"
+    echo "Opening $url..."
+    open -a "/Applications/Google Chrome.app" "$url" || ret=$?
+    return $ret
 }
 
 cmd_diff(){

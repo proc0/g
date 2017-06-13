@@ -34,6 +34,11 @@ declare "ALR_INFO=☏ ${WHITE}"
 declare "ALR_WARNING=☣ ${YELLOW}"
 declare "ALR_ERROR=☠ ${RED} ${L_RED}"
 
+declare "TXT_SELECT_BRANCH=Please select a branch number:"
+declare "TXT_FETCHING_BRANCH=⌛  fetching branch list..."
+declare "TXT_FETCHING_DATA=⌛  fetching remote data..."
+declare "TXT_UP_TO_DATE=Already up to date."
+
 #Error messages -----------
 #NO SOMETHING
 declare "KEY_10=NO_GIT"

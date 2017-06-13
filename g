@@ -4,7 +4,7 @@
 # g -- git shortcut tool 
 # author: proc0@github.com
 
-src_dir=~/Desktop/g
+src_dir=`dirname "${BASH_SOURCE[0]}"`
 config=$src_dir/config.yml
 #careful reordering !
 . $src_dir/lib/kvbash.sh
@@ -80,13 +80,15 @@ set_options() {
                 #shortcuts with required options and no options
                 [[ $flag == ':' ]] && flag="$1" || flag="-$key"
                 #get arg value 
-                local val="$OPTARG"
+                #everything after the space
+                local val="${OPTARG#* }"
                 #only if not a shortcut command
                 [[ "$OPTARG" == "${1#*-}" ]] && val=''
                 #set shortcut option values
                 case "$flag" in
+                    #set_option :: Label -> Value -> ErrorCode
                     -c) set_option 'comment' "$val" 14;;
-                    -k) set_option 'name'    "$val";;
+                    -k) set_option 'name'    "$val" && set_option 'target' "`get_current_repo`";;
                     *)  set_option 'target'  "$val";;
                 esac
                 return $ret;;

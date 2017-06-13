@@ -22,7 +22,9 @@ DOC_DIR=$(PREFIX)/share/doc/$(PKG_NAME)
 # 	git archive --output=$(PKG) --prefix=$(PKG_NAME)/ HEAD
 
 build: 
-	echo 'hi'
+	echo 'source' >> ~/.profile
+	echo -n " $(PREFIX)/lib/bash-lambda/bash-lambda" >> ~/.profile
+	source ~/.profile
 
 $(SIG): 
 	$(PKG)
