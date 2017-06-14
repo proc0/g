@@ -65,7 +65,7 @@ cmd_checkin(){
         echo "`const TXT UP_TO_DATE`"
     elif [ -n "$msg" ]; then
         git add -A .
-        git commit -m "$msg"
+        git commit -m "$msg" || ret=$?
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_stats
     fi
