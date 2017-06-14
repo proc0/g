@@ -4,8 +4,8 @@ VERSION=0.01.02
 DIRS=.
 PREFIX?=/usr/local/lib
 INSTALL_DIR=$(PREFIX)/$(NAME)
-INSTALL_DIRS=`find $(DIRS) -type d 2>/dev/null`
-INSTALL_FILES=`find $(DIRS) -type f 2>/dev/null`
+INSTALL_DIRS=`find $(DIRS) \( ! -regex '.*/\..*' \) -type d 2>/dev/null`
+INSTALL_FILES=`find $(DIRS) \( ! -regex '.*/\..*' \) -type f 2>/dev/null`
 # DOC_FILES=*.md
 
 BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
@@ -60,9 +60,10 @@ setup:
 	echo "#gg\n. $(INSTALL_DIR)/$(BASH_LAMBDA_DIR)" >> ~/.profile
 	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> ~/.profile
 	echo "#gg\n" >> ~/.profile
+	chmod +x $(INSTALL_DIR)/$(NAME)
 	#TODO: get rid of lamdba not found error, something not source profile properly
 	# . ~/.profile
-	reset
+	# reset
 
 uninstall:
 	rm -rf $(INSTALL_DIR)

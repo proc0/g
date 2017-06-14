@@ -1,9 +1,20 @@
 # oops :: text -> textSub -> IO()
 oops(){
-    alert $1 "$(const ERR $2 $3)" ERROR
-    exit $1
+    local msg='Error trying to throw error.'
+    local key=1
+    local msgkey=''
+
+    [[ $1 =~ '^[0-9]+$' ]] && key=$1
+    [[ "$key" -gt 1 ]] && msgkey=`const KEY "$key"` \
+    || msgkey="$1"
+
+    [ -n "$msgkey" ] && msg=`const ERR "$msgkey" "$2"` \
+    || msg=`const ERR "$2" "$3")`
+
+    alert $key "$(const ERR $2 $3)" ERROR
+    exit $key
 }
-# alert :: text -> type -> IO()
+# alert :: ErrorCode -> ErrorMessage -> ErrorType -> IO()
 alert(){
     # ☠ ☹ ☣ ⌛✘ ✔
     local msg=$(fold -w 54 -s <<<"$2")

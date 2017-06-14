@@ -17,7 +17,7 @@ config=$src_dir/config.yml
 
 #main :: IO()
 main() {
-    [ -n "$1" ] || oops 13 NO_COMMAND
+    [ -n "$1" ] || oops NO_COMMAND
 
     #info commands have no dep options
     [ -n "$(get_info $1)" ] && get_info "$1" \
@@ -53,7 +53,7 @@ exec_command(){
     [[ "${cmd#*\-}" == "$cmd" ]] \
     && opts="${argv#*$cmd[ ]*}" \
     || opts="${argv#*[^-]*$cmd[ ]*}"
-
+    #set options then run command
     (set_options "$opts" || ret=$?) \
     && get_command "$cmd" || ret=$?
 
@@ -157,15 +157,15 @@ get_info(){
         v|-v|version) kvget version;;
     esac
 }
-
+# set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=14
     [ -n "$3" ] && ret=$3
-    # echo "setting options $1 to $2"
+    # echo "setting option $1 to $2"
     [ -n "$2" ] && kvset "$1" "$2" \
     && return 0 || return $ret
 }
-
+# clear_options :: () -> IO()
 clear_options(){
     kvset branch ""
     kvset target ""
