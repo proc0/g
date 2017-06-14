@@ -61,6 +61,7 @@ setup:
 	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> ~/.profile
 	echo "#gg\n" >> ~/.profile
 	chmod +x $(INSTALL_DIR)/$(NAME)
+	echo "WIP install - please restart terminal session"
 	#TODO: get rid of lamdba not found error, something not source profile properly
 	# . ~/.profile
 	# reset
