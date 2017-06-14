@@ -2,12 +2,13 @@ NAME=g
 VERSION=0.01.02
 
 DIRS=.
-PREFIX?=/usr/local
+PREFIX?=/usr/local/lib
 INSTALL_DIR=$(PREFIX)/$(NAME)
 INSTALL_DIRS=`find $(DIRS) -type d 2>/dev/null`
 INSTALL_FILES=`find $(DIRS) -type f 2>/dev/null`
 # DOC_FILES=*.md
 
+BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
 # PKG_DIR=pkg
 # PKG_NAME=$(NAME)-$(VERSION)
 # PKG=$(PKG_DIR)/$(PKG_NAME).tar.gz
@@ -45,7 +46,7 @@ INSTALL_FILES=`find $(DIRS) -type f 2>/dev/null`
 test:
 	g v
 
-install: copyfiles setup test
+install: copyfiles setup
 
 copyfiles:
 	mkdir -p $(INSTALL_DIR)
@@ -55,19 +56,19 @@ copyfiles:
 	# cp -r $(DOC_FILES) $(DOC_DIR)/
 
 setup: 
-	echo -n "\n#gg\n. $(INSTALL_DIR)/lib/bash-lambda/bash-lambda\n" >> ~/.profile
-	echo -n 'export PATH=$$PATH:/usr/local/g' >> ~/.profile
-	echo -n "\n#gg\n" >> ~/.profile
+	#source bash-lamda lib and add g to path
+	echo "#gg\n. $(INSTALL_DIR)/$(BASH_LAMBDA_DIR)" >> ~/.profile
+	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> ~/.profile
+	echo "#gg\n" >> ~/.profile
+	#TODO: get rid of lamdba not found error, something not source profile properly
 	# . ~/.profile
+	reset
 
 uninstall:
 	rm -rf $(INSTALL_DIR)
-	awk '!/\#gg[\s]*.*[\s]*\#gg/' ~/.profile > temp && mv temp ~/.profile
+	sed '/\#gg/,/\#gg/d' ~/.profile > temp && mv temp ~/.profile
 	# for file in $(INSTALL_FILES); do rm -f $(INSTALL_DIR)/$$file; done
 	# rm -rf $(DOC_DIR)
 
-
-# .PHONY:  
-# 	build sign clean test tag release install uninstall all
 .PHONY:
 	test install copyfiles setup uninstall
