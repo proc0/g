@@ -1,127 +1,106 @@
 ### NAME
-| ${0##*/} | -- git command line workflow toolkit |
-| -------- | ------------------------------------ |
+    g -- git command line workflow toolkit 
+
 ### SYNOPSIS
-| ${0##*/} | COMMAND | (-)OPTION(*) ... [VALUE] | 
-|----------|---------|----------------------|
-|          | h, v    |
-|          | s, ui   |          
-|          | ls, br, mr, up | -t [TARGET] |
-|          | ci, co  | -m* [MESSAGE] -n [NAME] -t [TARGET] |
-|          | in, cl  | -t* [TARGET] | -o [OUTPUT] |   
-|          | pr, df  | -t* [TARGET] |
+    g  [ COMMAND ] [ -OPTION <VALUE>... ]
+    g  [ h | v ]
+       [ s | ui ]
+       [ ls | br | mr | up ] [ -t <TARGET> ]
+       [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
+       [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
+       [ pr | df ] [ -t* <TARGET> ] 
 
 ### DESCRIPTION
     A set of git worfklows wrapped in shortcut commands.
     
 ### COMMANDS
-| NAME        | ALIAS   | (-)OPTION(*)=DEFAULT       | DESCRIPTION 
-|-------------|---------|----------------------------|-------------
-| help        | -h\|h   |                            | Show this help message.
-| version     | -v\|v   |                            | Show current version. 
-| status      | st\|s   |                            | Show ui state and git status
-| list        | ls\|-l  | -t<target>=CURRENT_REPO    |
-| branch      | br\|-b  | -t<target>=INTERACTIVE     |
-| merge       | mr\|-m  | -t<target>=REMOTE_TARGET   |
-| update      | up\|-u  | -t<target>=REMOTE_REPOS    |
-| checkin     | ci\|-c\*| __-c<comment>*__           |
-|             |         | -t<target>=REMOTE_TARGET   |       
-| checkout    | co\|-k  | -t<target>=REMOTE_TARGET   |
-|             |         | -n<name>=BASE_TIMESTAMP    |
-| install     | in      | __-t<target>*__            |
-|             |         | -o<output>=CURRENT_DIR     |
-| clone       | cl      | __-t<target>*__            |
-|             |         | -o<output>=CURRENT_DIR     |
-| request     | pr      | __-t<target>*__            |
-| diff        | df      | __-t<target>*__            |
-| ui          | ui      |                            |
+    NAME        ALIAS       (-)OPTION(*)=DEFAULT        DESCRIPTION 
+    ------------------------------------------------------------------------
 
-    version     Show version.         -v|v
+    version     -v|v                                    Show version.
 
-    stats       Show current state    st|s 
-                configuration and
-                local git status
+    stats       st|s                                    Show current state 
+                                                        and git status.
 
-    list        List branches         ls|-l      --target=CURRENT_REPO
-                from target repo.
-                Defaults to current
-                repo.                 
-    
-    branch      Switch to a branch.   br|-b      --target=INTERACTIVE
-                Target is optional,
-                and can be either
-                a branch or a 
-                repo/branch.
+    list        ls|-l       -t<target>=CURRENT_REPO     List branches
+                                                        from target repo.
+                                                        Defaults to current
+                                                        repo.
+                                                        
+    branch      br|-b       -t<target>=INTERACTIVE      Switch to a branch.
+                                                        Target is optional,
+                                                        and can be either 
+                                                        a branch or a 
+                                                        repo/branch.
 
-    merge       Merge local to a      mr|-m      --target=REMOTE_TARGET
-                _remote_ target.
-                Defaults to the 
-                _tracked_ branch's
-                remote repo/branch.       
+    merge       mr|-m       -t<target>=REMOTE_TARGET    Merge local to a 
+                                                        _remote_ target.
+                                                        Defaults to the
+                                                        _tracked_ branch's
+                                                        remote repo/branch.
 
-    update      Fetch latest from     up|-u      --target=REMOTE_REPOS
-                all configured 
-                remotes by default,
-                or specify a repo.
+    update      up|-u       -t<target>=REMOTE_REPOS     Fetch latest from
+                                                        all configured 
+                                                        remotes by default,
+                                                        or specify a repo.
 
-    checkin     Stage, commit         ci|-c*     --target=REMOTE_TARGET
-                and push changes,                --comment*
-                to current repo.
-                Git comment text
-                is required.
+    checkin     ci|-c*      -c<comment>*                Stage, commit 
+                            -t<target>=REMOTE_TARGET    and push changes,
+                                                        to current repo.
+                                                        Git comment text
+                                                        is required.
 
-    checkout    Branch off from       co|-k      --target=CURRENT_BRANCH
-                current branch.                  --name=BASE_TIMESTAMP
-                Optional target if
-                not branching from
-                selected branch. 
-                Name defaults to 
-                generated parent
-                name + timestamp.                
+    checkout    co|-k       -k|-n<name>=BASE_TIMESTAMP  Branch off from
+                            -t<target>=REMOTE_TARGET    current branch.
+                                                        Optional target if
+                                                        not branching from
+                                                        selected branch.
+                                                        Name defaults to 
+                                                        generated parent
+                                                        name + timestamp.  
 
-    install     Create a git repo      in        --target*
-                from current dir.,               --output=CURRENT_DIR
-                and push to a remote
-                target. Optional 
-                output for a diff.
-                directory.
+    install     in          -t<target>*                 Create a git repo
+                            -o<output>=CURRENT_DIR      from current dir.,
+                                                        and push to a remote
+                                                        target. Optional 
+                                                        output for a diff.
+                                                        directory.
+                    
+    clone       cl          -t<target>*                 Clone target
+                            -o<output>=CURRENT_DIR      and setup local 
+                                                        configurations. 
 
-    clone       Clone target           cl        --target*
-                and setup local                  --output=./REPO_NAME
-                configurations.                   
+    request     pr          -t<target>*                 Build a pull
+                                                        request url and
+                                                        open in browser.
 
-    request     Build a pull           pr        --target*
-                request url and 
-                open in browser.
+    diff        df          -t<target>*                 Run a git diff 
+                                                        
+    ui          ui                                      WIP
 
-    diff        Run a git diff         df        --target*        
 
-    ui          Modify console         ui        
-                to always show 
-                status info 
+### OPTIONS
+    OPTION      FLAG       (-)OPTION(*)=DEFAULT        DESCRIPTION 
+    ------------------------------------------------------------------------
 
-OPTIONS -------------------------------------------------------------+
-  |             ALIAS       ARGUMENTS                                +
-  +------------------------------------------------------------------+
-    --target     -t         [ REPO NAME | BRANCH NAME | REPO/BRANCH ]
+    target      -t         [ REPO NAME | BRANCH NAME | REPO/BRANCH ]
                             When not required, this options 
                             defaults to the current selected repo 
                             and branch in the current git directory. 
                             The target type (branch, repo or both) 
                             depend on the command.
 
-    --name       -n         [ BRANCH NAME ] 
+    name         -n         [ BRANCH NAME ] 
                             The branch name when creating a new branch. 
                             When no name is given, the branch name 
                             defaults to the name of the base branch, 
                             plus a timestamp.
 
-    --message    -m         [ GIT MESSAGE ]
+    comment     -c         [ GIT MESSAGE ]
                             The message to be sent with the git 
                             commit command; cannot be empty.
 
-    --output     -o         [ PATH ]
+    output       -o         [ PATH ]
                             The path to the directory where the init 
                             command will clone and run scripts to 
                             initialize the codebase.
-        | -t TARGET* |

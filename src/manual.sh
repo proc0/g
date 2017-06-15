@@ -2,20 +2,19 @@
 #to allow /n
 _ifs=$IFS
 export IFS=:
-
+x=${0##*/}
 usage="
 ### NAME
-| ${0##*/} | -- git command line workflow toolkit |
-| -------- | ------------------------------------ |
+    $x -- git command line workflow toolkit 
+
 ### SYNOPSIS
-| ${0##*/} | COMMAND | (-)OPTION(*) ... [VALUE] | 
-|----------|---------|----------------------|
-|          | h, v    |
-|          | s, ui   |          
-|          | ls, br, mr, up | -t [TARGET] |
-|          | ci, co  | -m* [MESSAGE] -n [NAME] -t [TARGET] |
-|          | in, cl  | -t* [TARGET] | -o [OUTPUT] |   
-|          | pr, df  | -t* [TARGET] |
+    $x  [ COMMAND ] [ -OPTION <VALUE>... ]
+    $x  [ h | v ]
+       [ s | ui ]
+       [ ls | br | mr | up ] [ -t <TARGET> ]
+       [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
+       [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
+       [ pr | df ] [ -t* <TARGET> ] 
 
 ### DESCRIPTION
     A set of git worfklows wrapped in shortcut commands.
@@ -87,27 +86,27 @@ usage="
 
 
 ### OPTIONS
-    NAME        ALIAS       (-)OPTION(*)=DEFAULT        DESCRIPTION 
+    OPTION      FLAG       (-)OPTION(*)=DEFAULT        DESCRIPTION 
     ------------------------------------------------------------------------
 
-    --target     -t         [ REPO NAME | BRANCH NAME | REPO/BRANCH ]
+    target      -t         [ REPO NAME | BRANCH NAME | REPO/BRANCH ]
                             When not required, this options 
                             defaults to the current selected repo 
                             and branch in the current git directory. 
                             The target type (branch, repo or both) 
                             depend on the command.
 
-    --name       -n         [ BRANCH NAME ] 
+    name         -n         [ BRANCH NAME ] 
                             The branch name when creating a new branch. 
                             When no name is given, the branch name 
                             defaults to the name of the base branch, 
                             plus a timestamp.
 
-    --message    -m         [ GIT MESSAGE ]
+    comment     -c         [ GIT MESSAGE ]
                             The message to be sent with the git 
                             commit command; cannot be empty.
 
-    --output     -o         [ PATH ]
+    output       -o         [ PATH ]
                             The path to the directory where the init 
                             command will clone and run scripts to 
                             initialize the codebase.

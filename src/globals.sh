@@ -37,10 +37,12 @@ declare "ALR_INFO=☏ ${WHITE}"
 declare "ALR_WARNING=☣ ${YELLOW}"
 declare "ALR_ERROR=☠ ${RED} ${L_RED}"
 
+#ASSORTED TEXT
 declare "TXT_SELECT_BRANCH=Please select a branch number:"
 declare "TXT_FETCHING_BRANCH=⌛  fetching branch list..."
 declare "TXT_FETCHING_DATA=⌛  fetching remote data..."
 declare "TXT_UP_TO_DATE=Already up to date."
+declare "TXT_SEE_HELP=Please see help (g h)."
 
 #Error messages -----------
 #NO SOMETHING

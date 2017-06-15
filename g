@@ -15,14 +15,14 @@ config=$src_dir/config.yml
 . $src_dir/src/gui/index.sh
 . $src_dir/src/utils/index.sh
 
-#main :: IO()
+#main :: $@ -> IO()
 main() {
     [ -n "$1" ] || oops NO_COMMAND
     #info commands have no dep options
     [ -n "$(get_info $1)" ] && get_info "$1" \
     | more && exit 0
     #test for environment errors
-    env_err=$(env_ready $@)
+    env_err=`env_ready "$@"`
     [ -n "$env_err" ] && oops "$env_err" "$*"
 
     #main event
