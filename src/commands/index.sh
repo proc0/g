@@ -80,9 +80,17 @@ cmd_checkout(){
     local ret=0
 
     if [ -n "$target" -a -n "$name" ]; then
-        echo "checking out $target $name"
-        git checkout -b "$name"
-        git push -u "$target" "$name"
+        # echo "checking out $target $name"
+        if [ -n "${name#*\/}" ]; then
+            local repo="${name%\/*}"
+            local branch="${name#*\/}"
+            # echo "br: $branch, rp: $repo"
+            git checkout -b "$branch"
+            git push -u "$repo" "$branch"
+        else
+            git checkout -b "$name"
+            git push -u "$target" "$name"
+        fi
         cmd_stats
     else
         ret=23
