@@ -20,6 +20,8 @@ NONE='\033[00m'
 #STYLES
 BOLD='\033[1m'
 UNDERLINE='\033[4m'
+#SOUND
+ALERT='\a'
 
 #MESSAGES
 #-------------------------

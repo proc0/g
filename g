@@ -18,26 +18,23 @@ config=$src_dir/config.yml
 #main :: IO()
 main() {
     [ -n "$1" ] || oops NO_COMMAND
-
     #info commands have no dep options
     [ -n "$(get_info $1)" ] && get_info "$1" \
     | more && exit 0
-
     #test for environment errors
     env_err=$(env_ready $@)
-    [ -n "$env_err" ] && oops 90 $env_err "$*"
+    [ -n "$env_err" ] && oops "$env_err" "$*"
 
     #main event
     local ret=0
     (clear_options && parse_config || ret=$?) \
     && exec_command "$@" || ret=$?
-
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
     #else error code for human :(
-    err_key="`const KEY $ret`"
-    [ -n $err_key ] && oops $ret $err_key "$@" \
-    || oops 99 GENERIC "$@"
+    err_key=`const KEY $ret`
+    [ -n "$err_key" ] && oops "$err_key" "$@" \
+    || oops "$ret" "$@"
 }
 #exec_command :: $@ -> (()IO -> Int)
 exec_command(){

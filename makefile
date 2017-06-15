@@ -47,9 +47,11 @@ BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
 test:
 	g v
 
-install: copyfiles setup
+build: uninstall install
 
-uninstall: removefiles
+install: copyfiles setupenv
+
+uninstall: removefiles cleanenv
 
 copyfiles:
 	mkdir -p $(INSTALL_DIR)
@@ -70,8 +72,8 @@ setupenv:
 removefiles:
 	rm -rf $(INSTALL_DIR)
 
-removeenv:
+cleanenv:
 	sed '/\#gg/,/\#gg/d' $(PROFILE) > temp && mv temp $(PROFILE)
 
 .PHONY:
-	test install copyfiles setupconfig uninstall removefiles removeconfig
+	build test install copyfiles setupconfig uninstall removefiles removeconfig
