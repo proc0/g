@@ -64,7 +64,7 @@ set_options() {
     # echo "parsing options $*"
     while getopts $opt_keys key; do
         #get arg value 
-        #everything after the space
+        #everything after the space EXCEPT FOR COMMENT
         local val="${OPTARG#* }"
         #set val to empty if value is the shortcut cmd
         #which means no arg value was supplied by user
@@ -84,7 +84,7 @@ set_options() {
                 [[ $flag == ':' ]] && flag="$1" || flag="-$key"
                 #set shortcut option values
                 case "$flag" in
-                    -c) set_option 'comment' "$val" 14;;
+                    -c) set_option 'comment' "$OPTARG" 14;;
                     -k) local repo=`get_current_repo` \
                         && set_option 'name' "$val" \
                         && set_option 'target' "$repo";;

@@ -80,8 +80,8 @@ cmd_update(){
 cmd_checkin(){
     local ret=0
 
-    local msg="`kvget comment`"
-    local status_code="`get_status_code`"
+    local msg=`kvget comment`
+    local status_code=`get_status_code`
     #no comment value
     [ -z "$msg" ] && ret=14
 
@@ -94,7 +94,7 @@ cmd_checkin(){
         cmd_stats        
     elif [ -n "$msg" ]; then
         git add -A .
-        git commit -m "\"$msg\"" || ret=$?
+        git commit -m "$msg" || ret=$?
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_stats
     fi
