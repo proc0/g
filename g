@@ -58,11 +58,11 @@ exec_command(){
 #map command options to setters
 #set_option :: $@ -> (()IO -> Int)
 set_options() {
-    local OPTIND
+    local OPTIND=0
     local ret=0
-    local opt_keys=':hvsl:b:m:u:c:k:n:o:t:d:'
+    local opt_keys=':hvsl:b:m:u:k:c::n:o:t:d:'
     # echo "parsing options $*"
-    while getopts $opt_keys key; do
+    while getopts "$opt_keys" key; do
         #get arg value 
         #everything after the space EXCEPT FOR COMMENT
         local val="${OPTARG#* }"
