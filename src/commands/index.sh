@@ -108,22 +108,24 @@ cmd_checkout(){
     local name=`kvget name`
     local ret=0
 
-    if [ -n "$target" -a -n "$name" ]; then
-        # echo "checking out $target $name"
-        if [ -n "${name#*\/}" ]; then
+    if [ -n "$name" ]; then
+        if [[ $name =~ \/{1} ]]; then
             local repo="${name%\/*}"
             local branch="${name#*\/}"
             # echo "br: $branch, rp: $repo"
             git checkout -b "$branch"
             git push -u "$repo" "$branch"
         else
+            # echo "no name br: $name, rp: $target"
             git checkout -b "$name"
             git push -u "$target" "$name"
         fi
-        cmd_stats
     else
-        ret=23
+        name="`get_current_branch`_$(date +%s)"
+        git checkout -b "$name"
+        git push -u "$target" "$name"
     fi
+    cmd_stats
     return $ret
 }
 

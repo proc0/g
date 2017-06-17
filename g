@@ -87,7 +87,7 @@ set_options() {
                     -c) set_option 'comment' "$val" 14;;
                     -k) local repo=`get_current_repo` \
                         && set_option 'name' "$val" \
-                        && set_option 'target' "$val";;
+                        && set_option 'target' "$repo";;
                     *)  set_option 'target' "$val";;
                 esac
                 return $ret;;
