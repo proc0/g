@@ -80,8 +80,8 @@ cmd_update(){
 cmd_checkin(){
     local ret=0
 
-    local msg=`kvget comment`
-    local status_code=`get_status_code`
+    local msg="`kvget comment`"
+    local status_code="`get_status_code`"
     #no comment value
     [ -z "$msg" ] && ret=14
 
