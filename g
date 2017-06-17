@@ -84,7 +84,9 @@ set_options() {
                 [[ $flag == ':' ]] && flag="$1" || flag="-$key"
                 #set shortcut option values
                 case "$flag" in
-                    -c) set_option 'comment' "$OPTARG" 14;;
+                    #pass in everything but the first arg
+                    #for comments only
+                    -c) set_option 'comment' "${*:2}" || ret=14;;
                     -k) local repo=`get_current_repo` \
                         && set_option 'name' "$val" \
                         && set_option 'target' "$repo";;
@@ -158,12 +160,12 @@ get_info(){
 }
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
-    local ret=0
-    [ -n "$3" ] && ret=$3
+    #if there is no 4th arg, it's probably not a long text
+    #check if the 3rd arg is a number, and set it to ret
+    [ -z "$4" ] && [[ "$3" =~ '^[0-9]+$' ]] && ret=$3
+    [ -z "$2" ] && return 14 #no option value!
     # echo "setting option $1 to $2"
-    [ -n "$2" ] && kvset "$1" "$2" \
-    || ret=14 #wrong option value
-    return $ret
+    kvset "$1" "${*:2}"
 }
 # clear_options :: () -> IO()
 clear_options(){
