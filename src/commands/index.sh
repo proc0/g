@@ -87,6 +87,8 @@ cmd_checkin(){
 
     if [[ "$status_code" == 'SYNCED' ]]; then
         echo "`const TXT UP_TO_DATE`"
+    elif [[ "$status_code" == 'UNTRACKED' ]]; then
+        return 99
     elif [[ "$status_code" == 'AHEAD' ]]; then
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_stats        

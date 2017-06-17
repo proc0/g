@@ -65,6 +65,8 @@ get_status_code(){
         code=BEHIND
     elif [[ $stat =~ .*is\ ahead* ]]; then
         code=AHEAD
+    else
+        code=UNTRACKED
     fi
     echo "$code"
 }
