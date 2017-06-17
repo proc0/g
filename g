@@ -1,16 +1,14 @@
 #!/bin/bash
-# set -x
-
 # g -- git shortcut tool 
 # author: proc0@github.com
-
+# set -x
+#TODO: set debug flag for any cmd
 src_dir=`dirname "${BASH_SOURCE[0]}"`
 config=$src_dir/config.yml
 #careful reordering !
 . $src_dir/lib/kvbash.sh
 . $src_dir/src/lambda.sh 1>/dev/null
 . $src_dir/src/globals.sh
-. $src_dir/src/manual.sh
 . $src_dir/src/commands/index.sh
 . $src_dir/src/gui/index.sh
 . $src_dir/src/utils/index.sh
@@ -153,6 +151,7 @@ get_command(){
 #environment dependencies
 #get_info :: $@ -> IO()
 get_info(){
+    . $src_dir/src/manual.sh
     case "$@" in 
         h|-h|help) echo "$usage";;
         v|-v|version) kvget version;;
@@ -160,9 +159,6 @@ get_info(){
 }
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
-    #if there is no 4th arg, it's probably not a long text
-    #check if the 3rd arg is a number, and set it to ret
-    [ -z "$4" ] && [[ "$3" =~ '^[0-9]+$' ]] && ret=$3
     [ -z "$2" ] && return 14 #no option value!
     # echo "setting option $1 to $2"
     kvset "$1" "${*:2}"
