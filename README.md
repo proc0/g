@@ -80,27 +80,70 @@
 
 
 ### OPTIONS
-    OPTION      FLAG       (-)OPTION(*)=DEFAULT        DESCRIPTION 
+    OPTION      FLAG        POSSIBLE VALUES AND DESCRIPTION 
     ------------------------------------------------------------------------
 
-    target      -t         [ REPO NAME | BRANCH NAME | REPO/BRANCH ]
+    target      -t          < REMOTE NAME | BRANCH NAME | REMOTE/BRANCH >
                             When not required, this options 
-                            defaults to the current selected repo 
-                            and branch in the current git directory. 
-                            The target type (branch, repo or both) 
-                            depend on the command.
+                            defaults to the CURRENT TARGET which can be
+                            any of the above values. If not sure, you can be
+                            explicit by always supplying a REMOTE/BRANCH.
 
-    name         -n         [ BRANCH NAME ] 
-                            The branch name when creating a new branch. 
-                            When no name is given, the branch name 
-                            defaults to the name of the base branch, 
-                            plus a timestamp.
+    name        -n          < BRANCH NAME | WIP:REMOTE NAME >
+                            Name of the branch or remote for checkout
+                            and remote configuration(wip). Defaults to 
+                            timestamp prefixed plus base branch name.
 
-    comment     -c         [ GIT MESSAGE ]
-                            The message to be sent with the git 
-                            commit command; cannot be empty.
+    comment     -c          < COMMENT >
+                            The git commit message, required for both
+                            ci -c, and -c commands.
 
-    output       -o         [ PATH ]
+    output      -o          < DIR PATH >
                             The path to the directory where the init 
                             command will clone and run scripts to 
-                            initialize the codebase.
+                            initialize the codebase. Defaults to current.
+
+### EXAMPLES
+    WORKFLOW                    COMMAND
+    ------------------------------------------------------------------------ 
+    Checkout a new branch       g -k new_branch
+    and set its upstream 
+    to the default target
+    (set in config.yml).
+
+    After changes are made      g -c \"made some changes\"
+    to the new branch. 
+    Checkin all the changes 
+    to the default target.
+
+    Checkout a new branch       g co -n new_branch1 -t remote2/new_branch1
+    and specify a target
+    upstream.
+
+    Checkin the new branch      g ci -c \"made more changes\" -t remote2/new_branch1
+    and make sure to spec-
+    ify target (assuming 
+    remote2 not default).
+
+    Set that new remote         g cf -t remote2/newbranch1
+    to the default target,
+    for faster workflow.
+
+    After more changes,         g -c \"yet more changes to branch1\"
+    checkin the changes, 
+    without the need to 
+    specify a target.
+
+    Create a remote label       g cf -t remote3/somebranch -n target3
+    for multiple target
+    checkins.
+
+    Checkout a new branch       g co -n newbranch3 -t target3
+    from the new target,        g ci -c \"transferring branch to remote3\" -t target3
+    and merge changes to 
+    the target, by using 
+    its label.
+
+    Same as above but first,    g cf -t target3
+    set default target to       g -k newbranch3
+    ommit -t option.            g -c \"transferring branch to remote3\"
