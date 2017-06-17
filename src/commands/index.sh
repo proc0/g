@@ -94,7 +94,7 @@ cmd_checkin(){
         cmd_stats        
     elif [ -n "$msg" ]; then
         git add -A .
-        git commit -m "$msg" || ret=$?
+        git commit -m "\"$msg\"" || ret=$?
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_stats
     fi
