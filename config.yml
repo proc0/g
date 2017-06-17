@@ -1,6 +1,6 @@
 targets:
-  default : core/master
-  test : portal/release
-repos:
-  - core : https://git.autodesk.com/portal-core/ui.git
-  - portal : https://git.autodesk.com/portal/ui.git
+  default : origin/master
+  # foo1 : blah/foo1
+remotes:
+  # - blah : https://git.autodesk.com/blah/foo.git
+  - origin : https://github.com/proc0/g.git

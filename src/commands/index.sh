@@ -1,7 +1,18 @@
 cmd_stats(){
-echo -e "
-${GREEN}`get_current_repo`/`get_current_branch` | `get_status`
+    local ret=0
+    local status_text=`get_status`
+    local status_code=`get_status_code`
+    local target="`get_current_repo`/`get_current_branch`"
+    local modded=''
+
+    echo -e "
+${GREEN}$target | $status_text
 ─────────────────────────────────────────────${NONE}"
+    if [[ "$status_code" == 'MODIFIED' ]]; then
+        modded=`git ls-files -m`
+        echo -e "${L_RED}$modded${NONE}"
+    fi
+
 }
 
 #cmd_list :: () -> IO Int()
@@ -47,11 +58,23 @@ cmd_merge(){
 }
 
 cmd_update(){
+    local ret=0
     echo -e "`const TXT FETCHING_DATA`"
-    #TODO: abstract getting list of repos from config
-    local repo_list=$(list `kvget repos`)
-    map $(fn a 'echo \"updating $a...\" && git fetch $a') "$repo_list"
+    # local repo_list=$(list `kvget remotes`)
+    # map $(fn a 'echo \"updating $a...\" && git fetch $a') "$repo_list"    
+    local repo_len=${#remotes[@]}
+    while [[ repo_len -gt 1 ]]; do
+        local idx=$((repo_len-1))
+        repo="${remotes[$idx]% : *}"
+        # url="${remotes[$idx]#* : }"
+        echo -e "updating $repo ..."
+        git fetch $repo || ret=$?
+        repo_len=$idx
+    done
+    local _ret=$?
+    [[ "$_ret" -gt 0 ]] && ret=$_ret
     cmd_stats
+    return $ret
 }
 
 cmd_checkin(){
@@ -177,7 +200,7 @@ cmd_clone(){
 
     # [[ $_dest = 5 ]] && a="$c" || a="$d"
     # --branch
-    # for repo_name in `kvget repos`
+    # for repo_name in `kvget remotes`
     #    git remote add
 }
 
@@ -219,6 +242,6 @@ cmd_debug(){
 echo "
   debug command
 -----------------"
-dbg_opt=$(maybe `kvget _debug`)
+dbg_opt=`kvget _debug`
 echo "using option $dbg_opt"
 }

@@ -164,6 +164,7 @@ set_option(){
 }
 # clear_options :: () -> IO()
 clear_options(){
+    #TODO: abstract to some option config
     kvset branch ""
     kvset target ""
     kvset comment ""
