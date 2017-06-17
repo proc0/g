@@ -28,6 +28,7 @@ usage="
     stats       st|s                                    Show current state 
                                                         and git status.
 
+
     list        ls|-l       -t<target>=CURRENT_REPO     List branches
                                                         from target repo.
                                                         Defaults to current
@@ -80,9 +81,16 @@ usage="
                                                         request url and
                                                         open in browser.
 
-    diff        df          -t<target>*                 Run a git diff 
+    diff        df          -t<target>*                 Run a git diff (WIP)
                                                         
-    ui          ui                                      WIP
+    config      cf          -t<target>=DEFAULT_TARGET   Configure the remote
+                            -n<name>=SET_AS_DEFAULT     targets and/or set
+                                                        the default target by
+                                                        using a literal 
+                                                        remote/branch name, or
+                                                        target label. (WIP)
+
+    ui          ui                                      (WIP)
 
 
 ### OPTIONS

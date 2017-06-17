@@ -84,7 +84,7 @@ cmd_checkin(){
     #no comment value
     [ -z "$msg" ] && ret=14
 
-    if [[ `get_status_code` == 'SYNCED' ]]; then
+    if [[ "`get_status_code`" == 'SYNCED' ]]; then
         echo "`const TXT UP_TO_DATE`"
     elif [ -n "$msg" ]; then
         git add -A .
@@ -93,7 +93,7 @@ cmd_checkin(){
         cmd_stats
     fi
      _ret=$? #update ret if needed
-    [[ "$_ret" -gt 0 ]] && ret=$_ret
+    [ $_ret -gt 0 ] && ret=$_ret
     return $ret
 }
 
@@ -221,6 +221,22 @@ cmd_request(){
 cmd_diff(){
     # difference between two branches
     git diff --stat --color master..branch    
+}
+
+cmd_config(){
+    local ret=0
+    local target=`kvget target`
+    local target_name=`kvget name`
+    local is_default=0
+
+    [ -z "$target_name" ] && is_default=1
+
+    if [ $is_default -eq 1 ]; then
+        echo "setting target $target as default"
+    else 
+        echo "setting target $target_name to $target"
+    fi
+    return $ret
 }
 
 cmd_ui(){

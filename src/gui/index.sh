@@ -25,7 +25,7 @@ alert(){
     hcenter "$div" 47 "$color1"
     hcenter "$icon" "" "$color1"
     hcenter "$msg" "" $color2
-    hcenter "const TEXT SEE_HELP"
+    hcenter "`const TXT SEE_HELP`"
     hcenter "$div" 47 "$color1"
 }
 # abs :: Int -> Nat

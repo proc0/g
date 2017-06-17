@@ -24,7 +24,6 @@ main() {
     #test for environment errors
     env_err=`env_ready "$@"`
     [ -n "$env_err" ] && oops "$env_err" "$*"
-
     #main event
     local ret=0
     (clear_options && parse_config || ret=$?) \
@@ -41,9 +40,8 @@ exec_command(){
     local ret=0
     local cmd=$1
     local argv=$@
-
-    #split cmd from opts:
     local opts=''
+    #split cmd from opts:
     #if removing dash makes no diff
     #then match command; splice options
     #else match cmd-opt; splice options
@@ -51,9 +49,10 @@ exec_command(){
     && opts="${argv#*$cmd[ ]*}" \
     || opts="${argv#*[^-]*$cmd[ ]*}"
     #set options then run command
-    (set_options "$opts" || ret=$?) \
+    #note: $opts should not be in quotes
+    #so that getopts works properly
+    set_options $opts || ret=$? \
     && get_command "$cmd" || ret=$?
-
     return $ret
 }
 #map command options to setters
@@ -61,13 +60,20 @@ exec_command(){
 set_options() {
     local OPTIND
     local ret=0
+    local opt_keys=':hvsl:b:m:u:c:k:n:o:t:d:'
     # echo "parsing options $*"
-    while getopts ":hvsl:b:m:u:c:k:n:o:t:d:" key; do
-        case "$key" in
+    while getopts $opt_keys key; do
+        #get arg value 
+        #everything after the space
+        local val="${OPTARG#* }"
+        #set val to empty if value is the shortcut cmd
+        #which means no arg value was supplied by user
+        [[ "$OPTARG" == "${1#*-}" ]] && val=''        
+        case $key in
             #normal options w/ or w/o args
-            n) set_option "name"   "$OPTARG";;
-            o) set_option "output" "$OPTARG";;
-            t) set_option "target" "$OPTARG";;
+            n) set_option "name"   "$val";;
+            o) set_option "output" "$val";;
+            t) set_option "target" "$val";;
             #command shortcut option handling #LBMUCK
             #add option/command here & get_command
             l|b|m|u|c|k|?)
@@ -76,22 +82,17 @@ set_options() {
                 #check for this to make the switch case handle
                 #shortcuts with required options and no options
                 [[ $flag == ':' ]] && flag="$1" || flag="-$key"
-                #get arg value 
-                #everything after the space
-                local val="${OPTARG#* }"
-                #only if not a shortcut command
-                [[ "$OPTARG" == "${1#*-}" ]] && val=''
                 #set shortcut option values
                 case "$flag" in
-                    #set_option :: Label -> Value -> ErrorCode
                     -c) set_option 'comment' "$val" 14;;
-                    -k) set_option 'name'    "$val" && \
-                        set_option 'target'  "`get_current_repo`";;
-                    *)  set_option 'target'  "$val";;
+                    -k) local repo=`get_current_repo` \
+                        && set_option 'name' "$val" \
+                        && set_option 'target' "$val";;
+                    *)  set_option 'target' "$val";;
                 esac
                 return $ret;;
             #other options
-            d) set_option "_debug" "$OPTARG";;
+            d) set_option "_debug" "$val";;
         esac
         ret=$?
         #break on error
@@ -135,6 +136,7 @@ get_command(){
         install|in)     cmd_install;;
         clone|cl)       cmd_clone;;
         diff|df)        cmd_diff;;
+        config|cf)      cmd_config;;
         #other commands
         debug|d)        cmd_debug;;
         #wrong command
@@ -156,11 +158,12 @@ get_info(){
 }
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
-    local ret=14
+    local ret=0
     [ -n "$3" ] && ret=$3
     # echo "setting option $1 to $2"
     [ -n "$2" ] && kvset "$1" "$2" \
-    && return 0 || return $ret
+    || ret=14 #wrong option value
+    return $ret
 }
 # clear_options :: () -> IO()
 clear_options(){
@@ -169,13 +172,25 @@ clear_options(){
     kvset target ""
     kvset comment ""
     kvset output ""
+    kvset name ""
 }
 
 : <<proc0
-  ı̴̴̡♔̡
- (•｡̫̜• )͗
-|̧̤͡( ̨  )˥̻   
-  U͡͡͡U
+          _,.---`---.,_
+       ,-~             ~-.
+     ,^                   ^.
+    /                       \
+   (                         )
+   |  ~"---\    .    /---"~  |
+   | ( .--.. ~" I "~ .--.. ) |
+   (  (     `-. | ,-`     )  )
+    ) ! .#@.  / | \  .@#. ! (
+  .-  (::,.--" .^. "--.,::)  -.
+  (       ~    /|\     ~      )
+   \.__, T     V"V     T .__,/
+         ) , , . . . . (
+          l:_:_:_:_:_:l
+          (|_|_|_|_|_|) 
 proc0
 main $@
 
