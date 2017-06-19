@@ -58,11 +58,13 @@ cmd_merge(){
 
 cmd_update(){
     local ret=0
-    echo -e "`const TXT FETCHING_DATA`"
     # local repo_list=$(list `kvget remotes`)
     # map $(fn a 'echo \"updating $a...\" && git fetch $a') "$repo_list"    
     local repo_len=${#remotes[@]}
-    while [[ repo_len -gt 1 ]]; do
+    [[ $repo_len -gt 0 ]] && \
+    echo -e "`const TXT FETCHING_DATA`" \
+    || ret=99
+    while [[ $repo_len -gt 1 ]]; do
         local idx=$((repo_len-1))
         repo="${remotes[$idx]% : *}"
         # url="${remotes[$idx]#* : }"
@@ -71,9 +73,10 @@ cmd_update(){
         repo_len=$idx
     done
     local _ret=$?
-    [[ "$_ret" -gt 0 ]] && ret=$_ret
+    [[ "$_ret" -gt 0 ]] && return $_ret
+    [[ "$ret" -gt 0 ]] && return $ret
     cmd_stats
-    return $ret
+    return 0
 }
 
 cmd_checkin(){

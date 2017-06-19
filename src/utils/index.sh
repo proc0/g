@@ -2,10 +2,17 @@
 parse_config(){
     #load config file
     eval $(parse_yaml $config)
-    repo="${repos[0]% : *}"
-    url="${repos[0]#* : }"
+    # repo="${repos[0]% : *}"
+    # url="${repos[0]#* : }"
     # echo $url
     # echo "$targets_default"
+    # for i in ${remotes[@]}; do
+    #     local repo="`printf ${remotes[$i]% : *}`"
+    #     # local url="${remotes[$i]#* : }"
+    #     printf "using ${repo}"
+    #     # echo 'blah'"`echo ${remotes[i]}`'blah'
+    # done
+    # printf "${remotes[@]}"
 }
 
 get_status(){
@@ -90,11 +97,13 @@ check_env(){
     # [[ "$1" == 'cl' ]] && return 0
     #TODO: refactor to use error codes instead of text
     #check config file
-    # [ -f $config -a -s $config ] || return 11
+    echo "using config: $config"
+    [ -e $config ] || ret=11
     #check that current dir is a git directory
     git status 2>/dev/null 1>&/dev/null || ret=10
     #check remote connection: TODO use a nuetral command
-    # git fetch 2>/dev/null 1>&/dev/null || return 12
+    git fetch 2>/dev/null 1>&/dev/null ||  ret=12
+
     return $ret
 }
 

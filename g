@@ -3,8 +3,12 @@
 # author: proc0@github.com
 # set -x
 #TODO: set debug flag for any cmd
+# git config --global alias.ignore 'update-index --skip-worktree'
+# git config --global alias.unignore 'update-index --no-skip-worktree'
+# git config --global alias.ignored '!git ls-files -v | grep "^S"'
 src_dir=`dirname "${BASH_SOURCE[0]}"`
 config=$src_dir/config.yml
+[ -f $(pwd)/g.conf.yml ] && config=$(pwd)/g.conf.yml
 #careful reordering !
 . $src_dir/lib/kvbash.sh
 . $src_dir/src/lambda.sh 1>/dev/null
