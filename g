@@ -19,9 +19,9 @@ main() {
     #info commands have no dep options
     [ -n "$(get_info $1)" ] && get_info "$1" \
     | more && exit 0
-    #test for environment errors
-    env_err=`env_ready "$@"`
-    [ -n "$env_err" ] && oops "$env_err" "$*"
+    #test environment dependencies
+    env_ready "$@"
+
     #main event
     local ret=0
     (clear_options && parse_config || ret=$?) \

@@ -55,8 +55,8 @@ U           U    unmerged, both modified
 blah
 
 get_status_code(){
-    stat=`git status`
-    code=GENERIC
+    local stat=`git status`
+    local code=GENERIC
     if [[ $stat =~ .*modified.* ]]; then
         code=MODIFIED
     elif [[ $stat =~ .*up\-to\-date.* ]]; then
@@ -83,17 +83,28 @@ get_current_repo(){
     sed -e 's/\*.*\[\(.*\)\/\(.*\)\]/\1/g'
 }
 #check command hard dependencies
-#env_ready :: IO() -> ERROR_LABEL
-env_ready(){
+#check_env :: IO() -> ERROR_LABEL
+check_env(){
+    local ret=0
     #clone is an exception that doesn't need a repo
-    [[ "$1" == 'cl' ]] && return 0
+    # [[ "$1" == 'cl' ]] && return 0
     #TODO: refactor to use error codes instead of text
     #check config file
-    ([ -f $config -a -s $config ] && echo "" || echo "NO_CONFIG") &&
+    # [ -f $config -a -s $config ] || return 11
     #check that current dir is a git directory
-    (git status 2>/dev/null 1>&/dev/null && echo "" || echo "NO_GIT") ||
+    git status 2>/dev/null 1>&/dev/null || ret=10
     #check remote connection: TODO use a nuetral command
-    (git fetch 2>/dev/null 1>&/dev/null && echo "" || echo "NO_CONNECTION")
+    # git fetch 2>/dev/null 1>&/dev/null || return 12
+    return $ret
+}
+
+env_ready(){
+    local err_code=0
+    check_env || err_code=$?
+
+    [ $err_code -gt 0 ] && oops "$err_code" "$@"
+
+    return 0
 }
 
 lift_IFS(){
