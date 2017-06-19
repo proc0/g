@@ -5,8 +5,7 @@ cmd_stats(){
     local target="`get_current_repo`/`get_current_branch`"
     local modded=''
 
-    echo -e "
-${GREEN}$target | $status_text
+    echo -e "${GREEN}$target | $status_text
 ─────────────────────────────────────────────${NONE}"
     if [[ "$status_code" == 'MODIFIED' ]]; then
         modded=`git ls-files -m`

@@ -1,19 +1,20 @@
-# oops :: text -> textSub -> IO()
+# oops :: ErrCodeOrErrKey  -> $@ -> IO()
 oops(){
-    local msg='Error trying to throw error.'
-    local key=1
-    local msgkey=''
+    local err_code=1
+    local err_key=''
+    local err_msg="Error trying to throw an error. :'("
+    #if the code is a number and greater than 9
+    #set error_code or oops was called with error key
+    #note: do not expand variable for regexp checks
+    [[ $1 =~ ^[0-9]+$ && $1 -gt 9 ]] && err_code=$1 \
+    || [[ $1 =~ ^[A-Z_]+$ ]] && err_key=$1
+    #if error code was used, get the error key with it
+    [ $err_code -gt 1 ] && err_key=`const KEY $1`
+    #get the actual error message
+    [ -n "$err_key" ] && err_msg=`const ERR $err_key`
 
-    [[ $1 =~ ^[0-9]+$ && $1 -gt 9 ]] && key=$1 \
-    || ([[ "$1" =~ ^[A-Z_]+$ ]] && msgkey=$1)
-
-    [ $key -gt 1 ] && msgkey=`const KEY $1`
-
-
-    [ -n "$msgkey" ] && msg=`const ERR $msgkey`
-
-    alert "$key" "$msg" ERROR
-    exit $key
+    alert $err_code "$err_msg" ERROR
+    exit $err_code
 }
 # alert :: ErrorCode -> ErrorMessage -> ErrorType -> IO()
 alert(){
@@ -55,10 +56,11 @@ function hcenter {
 
         if [ $line_len -gt 0 ]; then
             #calculate positioning
-            # local half_len=`expr $line_len / 2`
-            local half_len=` awk -v "llen=$line_len" 'BEGIN { rounded = sprintf("%.0f", llen/2); print rounded }'`
+            local half_len=`awk -v "llen=$line_len" 'BEGIN { rounded = sprintf("%.0f", llen/2); print rounded }'`
             local center=0
-            [[ $width -gt 0 && $half_len -gt 0 ]] && center=`expr \( $width / 2 \) - $half_len`
+            [[ $half_len -gt 0 ]] && \
+            # center=`awk -v "w=$width; len=half_len" 'BEGIN { rounded = sprintf("%.0f", w/2 - len); print rounded }'`
+            center=`expr \( $width / 2 \) - $half_len`
 
             #get left padding in spaces
             if [ $center -gt 0 ]; then
