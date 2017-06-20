@@ -74,10 +74,10 @@ get_status_code(){
 
     if [[ $stat =~ .*modified.* ]]; then
         code=MODIFIED
-    elif [[ $stat =~ .*up\-to\-date.* ]]; then
+    elif [[ $stat =~ .*up\-to\-date.* || $stat =~ .*nothing\ to\ commit.* ]]; then
         local untracked=`echo $stat | grep 'Untracked\ files'`
         code=SYNCED
-        # [ -n "$untracked" ] && code=UNTRACKED
+        [ -n "$untracked" ] && code=UNTRACKED
     elif [[ $stat =~ .*branch\ is\ behind* ]]; then
         code=BEHIND
     elif [[ $stat =~ .*is\ ahead* ]]; then
@@ -85,7 +85,7 @@ get_status_code(){
     elif [[ $stat =~ .*Untracked.* ]]; then
         code=UNTRACKED
     else
-        code=UNTRACKED
+        code=UNKNOWN
     fi
     echo "$code"
 }
