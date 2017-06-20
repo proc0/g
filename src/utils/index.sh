@@ -64,16 +64,21 @@ U           U    unmerged, both modified
 blah
 
 get_status_code(){
+    #TODO fix status codes and allow multiple codes
     local stat=`git status`
     local code=GENERIC
     if [[ $stat =~ .*modified.* ]]; then
         code=MODIFIED
     elif [[ $stat =~ .*up\-to\-date.* ]]; then
-        code=SYNCED      
+        local untracked=`echo $stat | grep  'Untracked\ files'`
+        code=SYNCED
+        [ -n "$untracked" ] && code=UNTRACKED
     elif [[ $stat =~ .*branch\ is\ behind* ]]; then
         code=BEHIND
     elif [[ $stat =~ .*is\ ahead* ]]; then
         code=AHEAD
+    elif [[ $stat =~ .*Untracked.* ]]; then
+        code=UNTRACKED
     else
         code=UNTRACKED
     fi
