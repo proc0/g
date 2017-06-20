@@ -30,6 +30,7 @@ declare "STS_SYNCED=✔ sync'ed"
 declare "STS_MODIFIED=${RED}✘ modified"
 declare "STS_BEHIND=${YELLOW}⏱  behind"
 declare "STS_AHEAD=${YELLOW}⏱  ahead"
+declare "STS_UNTRACKED=${YELLOW}✘ files added"
 declare "STS_ERROR=${RED}☠ error"
 #Alert text and style
 #ALERT_TYPE=ICON COLOR1 COLOR2
