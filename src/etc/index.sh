@@ -77,7 +77,7 @@ get_status_code(){
     elif [[ $stat =~ .*up\-to\-date.* ]]; then
         local untracked=`echo $stat | grep 'Untracked\ files'`
         code=SYNCED
-        [ -n "$untracked" ] && code=UNTRACKED
+        # [ -n "$untracked" ] && code=UNTRACKED
     elif [[ $stat =~ .*branch\ is\ behind* ]]; then
         code=BEHIND
     elif [[ $stat =~ .*is\ ahead* ]]; then
