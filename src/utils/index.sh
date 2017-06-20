@@ -1,6 +1,8 @@
 
 parse_config(){
     #load config file
+    # echo "using config: $config"
+
     eval $(parse_yaml $config)
     # repo="${repos[0]% : *}"
     # url="${repos[0]#* : }"
@@ -85,19 +87,22 @@ get_current_branch(){
 }
 
 get_current_repo(){
-    git branch -vv | \
-    grep -E -o '\*.*\[.*\]' | \
-    sed -e 's/\*.*\[\(.*\)\/\(.*\)\]/\1/g'
+    local repo_name=`git branch -vv | \
+        grep -E -o '\*.*\[.*\]' | \
+        sed -e 's/\*.*\[\(.*\)\/\(.*\)\]/\1/g'`
+    #if git adds remote/ to the name
+    if [[ $repo_name =~ remotes\/ ]]; then
+        repo_name=`cut -d '/' -f 2 <<< $repo_name`
+    fi
+    echo "$repo_name"
 }
 #check command hard dependencies
 #check_env :: IO() -> ERROR_LABEL
 check_env(){
     local ret=0
-    #clone is an exception that doesn't need a repo
-    # [[ "$1" == 'cl' ]] && return 0
-    #TODO: refactor to use error codes instead of text
+    #exception - no environment needed
+    [[ "$1" == 'cl' ]] && return 0
     #check config file
-    echo "using config: $config"
     [ -e $config ] || ret=11
     #check that current dir is a git directory
     git status 2>/dev/null 1>&/dev/null || ret=10
@@ -127,24 +132,36 @@ lift_IFS(){
     fi
 }
 
-remotes_list_cache=(`echo`)
+rem_cache=""
 check_remote(){
-    local remotes_list
-    local remote_name=$1
-    local exists=1 #1 is error in bash
+    local rem_list
+    local rem_name=$1
+    #cach git remote show to avoid multiple calls
+    [ -n "$rem_cache" ] && rem_list=$rem_cache \
+    || rem_cache=`get_remotes` && rem_list=(`echo "$rem_cache"`)
 
-    [ "${#remotes_list_cache[@]}" -gt 0 ] && remotes_list=$remotes_list_cache \
-    || remotes_list=(echo `git remote show`) && remotes_list_cache=$remotes_list
-
-    local remotes_len=${#remotes_list[@]}
-    while [ $remotes_len -gt 0 -a $exists -eq 1 ]; do
-        local idx=$((remotes_len-1))
-        if [[ "$remote_name" == "${remotes_list[$idx]}" ]]; then
-            exists=0 #validates in bash
+    local exists=1 #1 is FALSE
+    local rem_len=${#rem_list[@]}
+    #iterate through git remotes and check names
+    while [ $rem_len -gt 0 -a $exists -eq 1 ]; do
+        local idx=$((rem_len-1))
+        if [ $idx -gt 0 -o $idx -eq 0 ]; then 
+            local rem_i=${rem_list[$idx]}
+            if [[ "$rem_name" == "$rem_i" ]]; then
+                exists=0 #0 is TRUE
+            fi
         fi
-        remotes_len=$idx
+        rem_len=$idx
     done
     return $exists
+}
+
+get_remotes(){
+    local rems=""
+    for i in `git remote show`; do 
+        rems="$rems $i"
+    done
+    echo $rems
 }
 
 parse_yaml() {
