@@ -127,6 +127,26 @@ lift_IFS(){
     fi
 }
 
+remotes_list_cache=(`echo`)
+check_remote(){
+    local remotes_list
+    local remote_name=$1
+    local exists=1 #1 is error in bash
+
+    [ "${#remotes_list_cache[@]}" -gt 0 ] && remotes_list=$remotes_list_cache \
+    || remotes_list=(echo `git remote show`) && remotes_list_cache=$remotes_list
+
+    local remotes_len=${#remotes_list[@]}
+    while [ $remotes_len -gt 0 -a $exists -eq 1 ]; do
+        local idx=$((remotes_len-1))
+        if [[ "$remote_name" == "${remotes_list[$idx]}" ]]; then
+            exists=0 #validates in bash
+        fi
+        remotes_len=$idx
+    done
+    return $exists
+}
+
 parse_yaml() {
     local prefix=$2
     local s

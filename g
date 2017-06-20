@@ -28,7 +28,8 @@ main() {
 
     #main event
     local ret=0
-    (clear_options && parse_config || ret=$?) \
+    clear_options
+    parse_config || ret=$? \
     && exec_command "$@" || ret=$?
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
