@@ -9,8 +9,7 @@ usage="
 
 ### SYNOPSIS
     $x  [ COMMAND ] [ -OPTION <VALUE>... ]
-    $x  [ h | v ]
-       [ s | ui ]
+    $x  [ h | v | s ]
        [ ls | br | mr | up ] [ -t <TARGET> ]
        [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
        [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
@@ -22,8 +21,6 @@ usage="
 ### COMMANDS
     NAME        ALIAS       (-)OPTION(*)=DEFAULT        DESCRIPTION 
     ------------------------------------------------------------------------
-
-    version     -v|v                                    Show version.
 
     stats       st|s                                    Show current state 
                                                         and git status.

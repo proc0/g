@@ -7,15 +7,15 @@
 # git config --global alias.unignore 'update-index --no-skip-worktree'
 # git config --global alias.ignored '!git ls-files -v | grep "^S"'
 src_dir=`dirname "${BASH_SOURCE[0]}"`
-config=$src_dir/config.yml
+config=$src_dir/g.conf.yml
 [ -f $(pwd)/g.conf.yml ] && config=$(pwd)/g.conf.yml
 #careful reordering !
 . $src_dir/lib/kvbash.sh
-. $src_dir/src/lambda.sh 1>/dev/null
-. $src_dir/src/globals.sh
-. $src_dir/src/commands/index.sh
+. $src_dir/src/etc/lambda.sh 1>/dev/null
+. $src_dir/src/doc/const.sh
+. $src_dir/src/cmd/index.sh
 . $src_dir/src/gui/index.sh
-. $src_dir/src/utils/index.sh
+. $src_dir/src/etc/index.sh
 
 #main :: $@ -> IO()
 main() {
@@ -156,7 +156,7 @@ get_command(){
 #environment dependencies
 #get_info :: $@ -> IO()
 get_info(){
-    . $src_dir/src/manual.sh
+    . $src_dir/src/doc/manual.sh
     case "$@" in 
         h|-h|help) echo "$usage";;
         v|-v|version) kvget version;;
