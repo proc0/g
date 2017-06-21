@@ -69,7 +69,6 @@ get_status_code(){
     local code=GENERIC
 
     local isDetached=`echo $stat | grep 'HEAD detached'`
-
     [ -n "$isDetached" ] && code=DETACHED && echo "$code"
 
     if [[ $stat =~ .*modified.* ]]; then
@@ -116,7 +115,7 @@ check_env(){
     #exceptions - no environment needed
     [[ "$1" == 'cl' ]] && return 0
     #check config file
-    ([ -e $config ] || ret=11) && \
+    ([ -e "$config" ] || ret=11) && \
     #check that current dir is a git directory
     (git status 2>/dev/null 1>&/dev/null || ret=10) && \
     #check remote connection: TODO use a nuetral command

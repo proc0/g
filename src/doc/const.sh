@@ -1,5 +1,14 @@
-kvset version "v0.01.00"
+# consants getter
+# const :: Prefix -> Label -> String
+const() { 
+    local prefix=$1 label=$2
+    local i="${prefix}_$label"
+    echo "${!i}"
+}
 
+VERSION='v0.02.12'
+CFGNAME='g.conf.yml'
+OPTKEYS=':hvsl:b:m:u:k:c::n:o:t:d:'
 #COLORS
 RED='\033[00;31m'
 YELLOW='\033[01;33m'
@@ -69,12 +78,3 @@ declare "ERR_BAD_ARGVAL=Unexpected option value $2"
 #OTHER
 declare "KEY_99=GENERIC"
 declare "ERR_GENERIC=:("
-
-
-# consants getter
-# const :: () -> String
-const() { 
-    local array=$1 index=$2
-    local i="${array}_$index"
-    echo "${!i}"
-}

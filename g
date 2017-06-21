@@ -1,49 +1,46 @@
 #!/bin/bash
 # g -- git shortcut tool 
 # author: proc0@github.com
-# set -x
-#TODO: set debug flag for any cmd
-# git config --global alias.ignore 'update-index --skip-worktree'
-# git config --global alias.unignore 'update-index --no-skip-worktree'
-# git config --global alias.ignored '!git ls-files -v | grep "^S"'
-src_dir=`dirname "${BASH_SOURCE[0]}"`
-config=$src_dir/g.conf.yml
-[ -f $(pwd)/g.conf.yml ] && config=$(pwd)/g.conf.yml
-#careful reordering !
+#init global resources
+src_exe=${BASH_SOURCE[0]}
+src_dir=`dirname "$src_exe"`
+#requires kvbash, bash-lamda
 . $src_dir/lib/kvbash.sh
-. $src_dir/src/etc/lambda.sh 1>/dev/null
+#careful reordering !
 . $src_dir/src/doc/const.sh
+. $src_dir/src/etc/lambda.sh 1>/dev/null
+. $src_dir/src/etc/index.sh
 . $src_dir/src/cmd/index.sh
 . $src_dir/src/gui/index.sh
-. $src_dir/src/etc/index.sh
-
+#set config filepath
+[ -f "$(pwd)/$CFGNAME" ] && \
+config="$(pwd)/$CFGNAME" || \
+config="$src_dir/$CFGNAME"
 #main :: $@ -> IO()
 main() {
-    [ -n "$1" ] || oops NO_COMMAND
+    local cmd=$1
+    [ -n "$cmd" ] || oops NO_COMMAND
     #info commands have no dep options
-    [ -n "$(get_info $1)" ] && get_info "$1" \
-    | more && exit 0
-    #test environment dependencies
+    [ -n "$(get_info $cmd)" ] && \
+    get_info "$cmd" | more && \
+    exit 0
+    #test environment
     env_ready "$@"
-
     #main event
     local ret=0
     clear_options
-    parse_config || ret=$? \
-    && exec_command "$@" || ret=$?
+    parse_config || ret=$? && \
+    exec_command "$@" || ret=$?
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
-    #else error code for human :(
+    #or err code for human :(
     err_key=`const KEY $ret`
-    [ -n "$err_key" ] && oops "$err_key" "$@" \
-    || oops "$ret" "$@"
+    [ -z "$err_key" ] && err_key=$ret
+    oops "$err_key" "$@"
 }
 #exec_command :: $@ -> (()IO -> Int)
 exec_command(){
-    local ret=0
-    local cmd=$1
-    local argv=$@
-    local opts=''
+    local ret=0 cmd=$1 argv=$@ opts=''
     #split cmd from opts:
     #if removing dash makes no diff
     #then match command; splice options
@@ -61,11 +58,9 @@ exec_command(){
 #map command options to setters
 #set_option :: $@ -> (()IO -> Int)
 set_options() {
-    local OPTIND=0
-    local ret=0
-    local opt_keys=':hvsl:b:m:u:k:c::n:o:t:d:'
+    local OPTIND=0 ret=0
     # echo "parsing options $*"
-    while getopts "$opt_keys" key; do
+    while getopts "$OPTKEYS" key; do
         #get arg value 
         #everything after the space EXCEPT FOR COMMENT
         local val="${OPTARG#* }"
@@ -103,7 +98,8 @@ set_options() {
         #break on error
         [ $ret -gt 0 ] && break
     done
-    [ $ret -eq 0 ] && shift "$((OPTIND-1))"
+    [ $ret -eq 0 ] && \
+    shift "$((OPTIND-1))"
     return $ret
 }
 #TODO: read command configuration from
@@ -112,8 +108,7 @@ set_options() {
 #map commands to handlers
 #get_command :: String -> (()IO -> Int)
 get_command(){
-    local ret=0
-    local cmd="$@"
+    local ret=0 cmd="$@"
     #shortcut map
     case "$1" in
         -l) cmd='ls';;
@@ -159,7 +154,7 @@ get_info(){
     . $src_dir/src/doc/manual.sh
     case "$@" in 
         h|-h|help) echo "$usage";;
-        v|-v|version) kvget version;;
+        v|-v|version) echo "$VERSION";;
     esac
 }
 # set_option :: Key -> Value -> ErrorCode -> IO()
