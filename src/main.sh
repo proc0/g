@@ -1,4 +1,4 @@
-. src/cmd/index.sh
+. $src_dir/src/cmd/index.sh
 #main :: $@ -> IO()
 main() {
     local cmd=$1
