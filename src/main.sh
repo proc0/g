@@ -52,9 +52,9 @@ set_options() {
         [[ "$OPTARG" == "${1#*-}" ]] && val=''        
         case $key in
             #normal options w/ or w/o args
-            n) set_option "name"   "$val";;
-            o) set_option "output" "$val";;
-            t) set_option "target" "$val";;
+            n) set_option 'name'   "$val";;
+            o) set_option 'output' "$val";;
+            t) set_option 'target' "$val";;
             #command shortcut option handling #LBMUCK
             #add option/command here & get_command
             l|b|m|u|c|k|?)
