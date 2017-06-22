@@ -93,9 +93,9 @@ usage="
                             ~REMOTE_BRANCH              requires both title
                                                         and body of the pull
                             -c(comment)*                request. Use a \n char
-                            < "TITLE                    
-                              \nBODY"                   in the comment to
-                             | "TITLE{body}BODY">       separate title and 
+                            < \"TITLE                    
+                               BODY\"                    in the comment to
+                             | \"TITLE{body}BODY\">       separate title and 
                                                         body or use tag {body}
                                                         before body text.
 
