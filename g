@@ -10,7 +10,6 @@ src_dir=`dirname "$src_exe"`
 . $src_dir/src/doc/const.sh
 . $src_dir/src/etc/lambda.sh 1>/dev/null
 . $src_dir/src/etc/index.sh
-. $src_dir/src/cmd/index.sh
 . $src_dir/src/gui/index.sh
 # set config filepath
 [ -f "$(pwd)/$CFGNAME" ] && \

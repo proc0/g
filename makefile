@@ -65,7 +65,7 @@ setupenv:
 	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> $(PROFILE)
 	echo "#gg\n" >> $(PROFILE)
 	chmod +x $(INSTALL_DIR)/$(NAME)
-	chmod -R +x $(INSTALL_DIR)/$(COMMAND_DIR)
+	# chmod -R +x $(INSTALL_DIR)/$(COMMAND_DIR)
 	echo "WIP install - please restart terminal session"
 	#TODO: get rid of lamdba not found error, something not source profile properly
 	# . $(PROFILE)
