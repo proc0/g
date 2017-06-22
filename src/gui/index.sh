@@ -75,4 +75,5 @@ function hcenter {
             fi
         fi
     done
+    unset IFS
 }

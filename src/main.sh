@@ -103,7 +103,7 @@ get_command(){
     #command map
     case $cmd in
         #optionless commands
-        stats|stat|s)   cmd_stats;;
+        stats|stat|s)   cmd_status;;
         ui)             cmd_ui;;
         #simple commands performed 
         #on current repo/branch
