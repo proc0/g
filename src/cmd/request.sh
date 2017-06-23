@@ -4,21 +4,23 @@ cmd_request(){
     local branch=`get_current_branch`
     local remote_target=`kvget target`
     local message=`kvget comment`
-
-    ([ -z "$remote_target" ] || [ -z "$message" ]) \
-    && return 14 #no argval
+    local user=`get_username`
 
     local msg_title='' msg_body=''
 
     [[ "$message" =~ \n ]] \
-    && msg_title=${message%\n*} \
-    && msg_body=${message#*\n}
+    && msg_title="${message%\n*}" \
+    && msg_body="${message#*\n}"
 
     [[ "$message" =~ \{body\} ]] \
-    && msg_title=${message%\{body\}*} \
-    && msg_body=${message#*\{body\}}
+    && msg_title="${message%\{body\}*}" \
+    && msg_body="${message#*\{body\}}" \
 
-    echo "$msg_title + $msg_body"
+
+    ([ -z "$remote_target" -o -z "$msg_title" -o -z "$msg_body" ]) \
+    && return 14 #no argval
+
+    echo "title:$msg_title, body:$msg_body, head:$user:$branch, base:$remote_target"
     #TODO: get name of remote repo
     # local remote_repo_name=`get_remote_repo_name`
 
@@ -28,7 +30,7 @@ cmd_request(){
     #TODO: outsource this to config to open with w/e
     # open -a "/Applications/Google Chrome.app" "$url" || ret=$?
 
-    # curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:3000/api/login
+    # curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' https://git.autodesk.com/repos/
 
     return $ret
 }

@@ -8,7 +8,7 @@ const() {
 
 VERSION='v0.02.12'
 CFGNAME='g.conf.yml'
-OPTKEYS=':hvsl:b:m:u:k:c::n:o:t:d:'
+OPTKEYS=':hvsl:b:m:u:k:c::n:o:t:d'
 #COLORS
 RED='\033[00;31m'
 YELLOW='\033[01;33m'

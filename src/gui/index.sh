@@ -1,5 +1,6 @@
 # oops :: ErrCodeOrErrKey  -> $@ -> IO()
 oops(){
+    set +x
     local err_code=1
     local err_key=''
     local err_msg="Error trying to throw an error. :'("

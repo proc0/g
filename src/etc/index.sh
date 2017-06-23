@@ -177,6 +177,11 @@ get_remotes(){
     echo $rems
 }
 
+get_username(){
+    local user=`git config --global user.name`
+    echo $user
+}
+
 parse_yaml() {
     local prefix=$2
     local s
