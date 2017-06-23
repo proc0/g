@@ -45,43 +45,35 @@ set_options() {
     # echo "parsing options $*"
     while getopts "$OPTKEYS" key; do
         #get arg value 
-        #everything after the space EXCEPT FOR COMMENT
-        local val="${OPTARG#* }"
-        #set val to empty if value is the shortcut cmd
-        #which means no arg value was supplied by user
-        [[ "$OPTARG" == "${1#*-}" ]] && val=''        
+        local val="${OPTARG}"       
         case $key in
+            #command shortcut option handling #LBMUCK
+            #add option/command here & get_command
+            l|b|m|u|c|k|?)
+                #set shortcut option values
+                case "$key" in
+                    #pass in everything but the first arg
+                    #for comments only
+                    c) set_option 'comment' "$val" || ret=14;;
+                    k) local repo=`get_current_repo` \
+                        && set_option 'name' "$val" \
+                        && set_option 'target' "$repo";;
+                        #getopts sets option key to : when option value is null
+                    *)  [[ $key == ':' ]] && val="`get_current_repo`/`get_current_branch`"
+                        set_option 'target' "$val";;
+                esac;;
+                # return $ret;;
             #normal options w/ or w/o args
             n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
-            #command shortcut option handling #LBMUCK
-            #add option/command here & get_command
-            l|b|m|u|c|k|?)
-                local flag="$key" #shortcut flag
-                #when getopts can't parse option, opts=':'
-                #check for this to make the switch case handle
-                #shortcuts with required options and no options
-                [[ $flag == ':' ]] && flag="$1" || flag="-$key"
-                #set shortcut option values
-                case "$flag" in
-                    #pass in everything but the first arg
-                    #for comments only
-                    -c) set_option 'comment' "${*:2}" || ret=14;;
-                    -k) local repo=`get_current_repo` \
-                        && set_option 'name' "$val" \
-                        && set_option 'target' "$repo";;
-                    *)  set_option 'target' "$val";;
-                esac
-                return $ret;;
             #other options
             d) set_option "_debug" "$val";;
         esac
-        ret=$?
-        #break on error
-        [ $ret -gt 0 ] && break
+        _ret=$?
+        #keep track of error code
+        [ $_ret -gt $ret ] && ret=$_ret
     done
-    [ $ret -eq 0 ] && \
     shift "$((OPTIND-1))"
     return $ret
 }
@@ -142,9 +134,11 @@ get_info(){
 }
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
-    [ -z "$2" ] && return 14 #no option value!
+    local ret=0
+    [ -z "$2" ] && ret=14 #no option value!
     # echo "setting option $1 to $2"
-    kvset "$1" "${*:2}"
+    kvset "$1" "$2"
+    return $ret
 }
 # clear_options :: () -> IO()
 clear_options(){

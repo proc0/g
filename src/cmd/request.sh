@@ -10,7 +10,15 @@ cmd_request(){
 
     local msg_title='' msg_body=''
 
-    [ "$message" =~ \n ]
+    [[ "$message" =~ \n ]] \
+    && msg_title=${message%\n*} \
+    && msg_body=${message#*\n}
+
+    [[ "$message" =~ \{body\} ]] \
+    && msg_title=${message%\{body\}*} \
+    && msg_body=${message#*\{body\}}
+
+    echo "$msg_title + $msg_body"
     #TODO: get name of remote repo
     # local remote_repo_name=`get_remote_repo_name`
 
