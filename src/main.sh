@@ -47,7 +47,7 @@ set_options() {
         #get arg value 
         local val="${OPTARG}"       
         case $key in
-            #command shortcut option handling #LBMUCK
+            #command shortcuts #LBMUCK
             #add option/command here & get_command
             l|b|m|u|c|k|?)
                 #set shortcut option values
@@ -55,12 +55,15 @@ set_options() {
                     #pass in everything but the first arg
                     #for comments only
                     c) set_option 'comment' "$val" || ret=14;;
-                    k) local repo=`get_current_repo` \
-                        && set_option 'name' "$val" \
-                        && set_option 'target' "$repo";;
-                        #getopts sets option key to : when option value is null
-                    *)  [[ $key == ':' ]] && val="`get_current_repo`/`get_current_branch`"
-                        set_option 'target' "$val";;
+                    k) local repo=`get_current_repo` && \
+                       set_option 'name' "$val" && \
+                       set_option 'target' "$repo";;
+                       #getopts sets key to : if val=null
+                    *) [[ $key == ':' ]] && \
+                       local repo=`get_current_repo` && \
+                       local branch=`get_current_branch` && \
+                       val="$repo/$branch";
+                       set_option 'target' "$val";;
                 esac;;
                 # return $ret;;
             #normal options w/ or w/o args
@@ -68,7 +71,7 @@ set_options() {
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
             #other options
-            d) set_option "_debug" "$val";;
+            d) set_option '_debug' "$val";;
         esac
         _ret=$?
         #keep track of error code
