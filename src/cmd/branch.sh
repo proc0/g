@@ -1,17 +1,27 @@
 cmd_branch(){
     local ret=0
-
-    local target=`kvget target`
-    if [ -n "$target" ]; then
-        local branch=${target#*\/}
-        local repo=${target%\/*}
-        (git checkout "$branch" || ret=$?) &&
-        (git pull "$repo" "$branch" || ret=$?)
+    local stat_code=`get_status_code`
+    if [[ "$stat_code" == 'MODIFIED' ]];then
+        echo 'Commit or stash changes first.'
     else
-        echo -ne "`const TXT FETCHING_BRANCH`" &&
-        list_branches || ret=$?
+        local target=`kvget target`
+        if [ -n "$target" ]; then
+            if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+                local branch=${target#*\/}
+                local repo=${target%\/*}
+                (git checkout "$branch" || ret=$?) &&
+                (git pull "$repo" "$branch" || ret=$?)
+            else
+                local t_branch=$target
+                local t_repo=`get_current_repo`
+                (git checkout "$t_branch" || ret=$?) &&
+                (git pull "$t_repo" "$t_branch" || ret=$?)
+            fi           
+        else
+            echo -ne "`const TXT FETCHING_BRANCH`" &&
+            list_branches || ret=$?
+        fi
     fi
-
     return $ret
 }
 
