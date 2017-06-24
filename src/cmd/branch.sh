@@ -1,10 +1,12 @@
 cmd_branch(){
     local ret=0
 
-    local input_branch=`kvget target`
-    if [ -n "$input_branch" ]; then
-        (git checkout "$input_branch" || ret=$?) &&
-        (git pull "`get_current_repo`" "$input_branch" || ret=$?)
+    local target=`kvget target`
+    if [ -n "$target" ]; then
+        local branch=${target#*\/}
+        local repo=${target%\/*}
+        (git checkout "$branch" || ret=$?) &&
+        (git pull "$repo" "$branch" || ret=$?)
     else
         echo -ne "`const TXT FETCHING_BRANCH`" &&
         list_branches || ret=$?

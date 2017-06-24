@@ -1,5 +1,5 @@
 . $src_dir/src/cmd/index.sh
-debug=0
+# debug=0
 #main :: $@ -> IO()
 main() {
     local cmd=$1
@@ -16,7 +16,7 @@ main() {
     parse_config || ret=$? && \
     exec_command "$@" || ret=$?
     #turn off debug
-    [ $debug -eq 1 ] && set -
+    # [ $debug -eq 1 ] && set -
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
     #or err code for human :(
@@ -36,7 +36,7 @@ exec_command(){
     || opts="${argv#*[^-]*$cmd[ ]*}"
     #replace spaces with underscores
     local optkeys=${OPTKEYS//:/}
-    opts=${opts// /_}
+    opts="${opts// /_}"
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
         #find option keys and replace
@@ -46,6 +46,7 @@ exec_command(){
         fi     
     done
     #set options then run command
+    # local options=${opts:1:${#opts}}
     #note: $opts should not be in ""
     #so that getopts works properly
     (set_options $opts) || ret=$? \
@@ -61,7 +62,7 @@ set_options() {
         #get arg value 
         local val="${OPTARG}"       
         case $key in
-            d) debug=1;;
+            # d) debug=1;;
             #normal options w/ or w/o args
             n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
@@ -78,10 +79,13 @@ set_options() {
                    set_option 'name' "$val" && \
                    set_option 'target' "$repo";;
                    #getopts sets key to : if val=null
-                *) [[ $key == ':' ]] && \
+                b|*) [[ $key == ':' && $val != 'b' ]] && \
                    local repo=`get_current_repo` && \
                    local branch=`get_current_branch` && \
-                   val="$repo/$branch";
+                   val="$repo/$branch"
+                   #do not set default target
+                   #for -b with no user value
+                   [[ $val == 'b' ]] || \
                    set_option 'target' "$val";;
             esac;;
         esac
@@ -90,7 +94,7 @@ set_options() {
         [ $_ret -gt $ret ] && ret=$_ret
     done
     shift "$((OPTIND-1))"
-    [ $debug -eq 1 ] && set -x
+    # [ $debug -eq 1 ] && set -x
     return $ret
 }
 #TODO: read command configuration from
