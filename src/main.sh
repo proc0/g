@@ -36,7 +36,7 @@ exec_command(){
     || opts="${argv#*[^-]*$cmd[ ]*}"
     #replace spaces with underscores
     local optkeys=${OPTKEYS//:/}
-    opts="${opts// /_}"
+    opts="_${opts// /_}"
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
         #find option keys and replace
@@ -46,10 +46,10 @@ exec_command(){
         fi     
     done
     #set options then run command
-    # local options=${opts:1:${#opts}}
+    local options=${opts:1:${#opts}}
     #note: $opts should not be in ""
     #so that getopts works properly
-    (set_options $opts) || ret=$? \
+    (set_options $options) || ret=$? \
     && get_command "$cmd" || ret=$?
     return $ret
 }
@@ -64,7 +64,7 @@ set_options() {
         case $key in
             # d) debug=1;;
             #normal options w/ or w/o args
-            n) set_option 'name'   "$val";;
+            k|n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
             #command shortcuts #LBMUCK
@@ -75,9 +75,9 @@ set_options() {
                 #pass in everything but the first arg
                 #for comments only
                 c) set_option 'comment' "$val";;
-                k) local repo=`get_current_repo` && \
-                   set_option 'name' "$val" && \
-                   set_option 'target' "$repo";;
+                # k) local repo=`get_current_repo` && \
+                #    set_option 'name' "$val" && \
+                #    set_option 'target' "$repo";;
                    #getopts sets key to : if val=null
                 b|*) [[ $key == ':' && $val != 'b' ]] && \
                    local repo=`get_current_repo` && \

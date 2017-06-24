@@ -1,24 +1,32 @@
 cmd_checkout(){
-    local target=`kvget target`
-    local name=`kvget name`
     local ret=0
+    local stat_code=`get_status_code`
 
-    if [ -n "$name" ]; then
-        if [[ $name =~ \/{1} ]]; then
-            local repo="${name%\/*}"
-            local branch="${name#*\/}"
-            # echo "br: $branch, rp: $repo"
-            git checkout -b "$branch"
-            git push -u "$repo" "$branch"
-        else
-            # echo "no name br: $name, rp: $target"
-            git checkout -b "$name"
-            git push -u "$target" "$name"
-        fi
+    if [[ "$stat_code" == 'MODIFIED' ]];then
+        echo 'Commit or stash changes first.'
     else
-        name="`get_current_branch`_$(date +%s)"
-        git checkout -b "$name"
-        git push -u "$target" "$name"
+        local target=`kvget target`
+        local t_branch=${target#*\/}
+        local t_repo=${target%\/*}
+        local name=`kvget name`
+
+        if [ -n "$name" ]; then
+            if [[ $name =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+                local repo="${name%\/*}"
+                local branch="${name#*\/}"
+                # echo "br: $branch, rp: $repo"
+                git checkout -b "$branch"
+                git push -u "$repo" "$branch"
+            else
+                # echo "no name br: $name, rp: $target"
+                git checkout -b "$name"
+                git push -u "$t_repo" "$t_branch"
+            fi
+        else
+            name="$t_branch_$(date +%s)"
+            git checkout -b "$name"
+            git push -u "$t_repo" "$t_branch"
+        fi
     fi
     cmd_status
     return $ret
