@@ -1,4 +1,5 @@
 . $src_dir/src/cmd/index.sh
+debug=0
 #main :: $@ -> IO()
 main() {
     local cmd=$1
@@ -14,6 +15,8 @@ main() {
     clear_options
     parse_config || ret=$? && \
     exec_command "$@" || ret=$?
+    #turn off debug
+    [ $debug -eq 1 ] && set -
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
     #or err code for human :(
@@ -32,10 +35,14 @@ exec_command(){
     && opts="${argv#*$cmd[ ]*}" \
     || opts="${argv#*[^-]*$cmd[ ]*}"
     #replace spaces with underscores
-    local optlist="${OPTKEYS//:/ |-}"
-    opts=${opts//[^$optlist\s] [^$optlist\s]/_}
-    # opts=${opts//[^-hvslbmukcnotd\s] [^-hvslbmukcnotd\s]/_}
-    
+    local optkeys=${OPTKEYS//:/}
+    opts=${opts// /_}
+    for s in $(seq 0 ${#optkeys}); do
+        local k="-${optkeys:s:1}"
+        if [[ $opts =~ _"$k"_ ]]; then
+            opts=${opts//_"$k"_/ $k }
+        fi     
+    done
     #set options then run command
     #note: $opts should not be in ""
     #so that getopts works properly
@@ -52,6 +59,7 @@ set_options() {
         #get arg value 
         local val="${OPTARG}"       
         case $key in
+            d) debug=1;;
             #command shortcuts #LBMUCK
             #add option/command here & get_command
             l|b|m|u|c|k|?)
@@ -75,13 +83,13 @@ set_options() {
             n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
-            d) set -x;;
         esac
         _ret=$?
         #keep track of error code
         [ $_ret -gt $ret ] && ret=$_ret
     done
     shift "$((OPTIND-1))"
+    [ $debug -eq 1 ] && set -x
     return $ret
 }
 #TODO: read command configuration from

@@ -11,8 +11,8 @@ defn _concat a b '
     echo "$_id $(list $($_id $(list $a)) $($_id $(list $b)))"'
 
 defn _zip a b c '
-    a1=(`echo $a`)
-    b1=(`echo $b`)
+    a1=(`echo "$a"`)
+    b1=(`echo "$b"`)
     len_a="${#a1[@]}"
     len_b="${#b1[@]}"
     len=$([[ $len_a -gt $len_b ]] && echo $len_a || echo $len_b)
@@ -27,4 +27,29 @@ defn _zip a b c '
         idx=$((idx+1));
     done;
     echo $rv;'
-    
+
+defn _times str n '
+    idx=0
+    len=$n
+    list=""
+    if [ $len -gt 0 ]; then
+        while [ $idx -lt $len ]; do
+            list="$list$str"
+            idx=$((idx+1))
+        done
+    fi
+    echo $list'
+
+_spread(){
+    local str="$*" newstr=""
+    if [ -n "$str" ]; then
+        for s in $(seq 1 ${#str}); do
+            if [ $s -eq 1 ]; then
+                newstr="${str:s-1:1}"
+            else
+                newstr="$newstr ${str:s-1:1}"
+            fi
+        done
+    fi
+    echo "$newstr"
+}
