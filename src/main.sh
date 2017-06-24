@@ -29,8 +29,8 @@ exec_command(){
     local ret=0 cmd=$1 argv=$@ opts=''
     #split cmd from opts:
     #if removing dash makes no diff
-    #then match command; splice options
-    #else match cmd-opt; splice options
+    #then match command; splice opts
+    #else match cmd-opt; splice opts
     [[ "${cmd#*\-}" == "$cmd" ]] \
     && opts="${argv#*$cmd[ ]*}" \
     || opts="${argv#*[^-]*$cmd[ ]*}"
@@ -39,6 +39,8 @@ exec_command(){
     opts=${opts// /_}
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
+        #find option keys and replace
+        #underscores with spaces
         if [[ $opts =~ _"$k"_ ]]; then
             opts=${opts//_"$k"_/ $k }
         fi     
@@ -60,29 +62,28 @@ set_options() {
         local val="${OPTARG}"       
         case $key in
             d) debug=1;;
-            #command shortcuts #LBMUCK
-            #add option/command here & get_command
-            l|b|m|u|c|k|?)
-                #set shortcut option values
-                case "$key" in
-                    #pass in everything but the first arg
-                    #for comments only
-                    c) set_option 'comment' "$val" || ret=14;;
-                    k) local repo=`get_current_repo` && \
-                       set_option 'name' "$val" && \
-                       set_option 'target' "$repo";;
-                       #getopts sets key to : if val=null
-                    *) [[ $key == ':' ]] && \
-                       local repo=`get_current_repo` && \
-                       local branch=`get_current_branch` && \
-                       val="$repo/$branch";
-                       set_option 'target' "$val";;
-                esac;;
-                # return $ret;;
             #normal options w/ or w/o args
             n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
+            #command shortcuts #LBMUCK
+            #add option/command here & get_command
+            l|b|m|u|c|k|?)
+            #set shortcut option values
+            case "$key" in
+                #pass in everything but the first arg
+                #for comments only
+                c) set_option 'comment' "$val";;
+                k) local repo=`get_current_repo` && \
+                   set_option 'name' "$val" && \
+                   set_option 'target' "$repo";;
+                   #getopts sets key to : if val=null
+                *) [[ $key == ':' ]] && \
+                   local repo=`get_current_repo` && \
+                   local branch=`get_current_branch` && \
+                   val="$repo/$branch";
+                   set_option 'target' "$val";;
+            esac;;
         esac
         _ret=$?
         #keep track of error code
@@ -151,7 +152,6 @@ set_option(){
     local val="$2"
     [ -z "$val" ] && ret=14 #no option value!
     # echo "setting option $1 to $2"
-    # kvset "$1" "${val// /_}"
     #replace underscores with spaces
     kvset "$1" "${val//_/ }"
     return $ret
