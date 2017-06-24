@@ -31,10 +31,15 @@ exec_command(){
     [[ "${cmd#*\-}" == "$cmd" ]] \
     && opts="${argv#*$cmd[ ]*}" \
     || opts="${argv#*[^-]*$cmd[ ]*}"
+    #replace spaces with underscores
+    local optlist="${OPTKEYS//:/ |-}"
+    opts=${opts//[^$optlist\s] [^$optlist\s]/_}
+    # opts=${opts//[^-hvslbmukcnotd\s] [^-hvslbmukcnotd\s]/_}
+    
     #set options then run command
-    #note: $opts should not be in quotes
+    #note: $opts should not be in ""
     #so that getopts works properly
-    set_options $opts || ret=$? \
+    (set_options $opts) || ret=$? \
     && get_command "$cmd" || ret=$?
     return $ret
 }
@@ -70,8 +75,7 @@ set_options() {
             n) set_option 'name'   "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
-            #other options
-            d) set_option '_debug' "$val";;
+            d) set -x;;
         esac
         _ret=$?
         #keep track of error code
@@ -115,10 +119,8 @@ get_command(){
         clone|cl)       cmd_clone;;
         diff|df)        cmd_diff;;
         config|cf)      cmd_config;;
-        #other commands
-        debug|d)        cmd_debug;;
         #wrong command
-        *)              ret=22
+        *) ret=22
     esac
     _ret=$? #captures last code
     #update return value if needed
@@ -138,9 +140,12 @@ get_info(){
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=0
-    [ -z "$2" ] && ret=14 #no option value!
+    local val="$2"
+    [ -z "$val" ] && ret=14 #no option value!
     # echo "setting option $1 to $2"
-    kvset "$1" "$2"
+    # kvset "$1" "${val// /_}"
+    #replace underscores with spaces
+    kvset "$1" "${val//_/ }"
     return $ret
 }
 # clear_options :: () -> IO()

@@ -34,5 +34,5 @@ config="$src_dir/$CFGNAME"
 #       [.M:#:.:.: : ,]
 #        '*($(_|_),)-'
 # proc0
-main $@
+main "$@"
 
