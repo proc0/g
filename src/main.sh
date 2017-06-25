@@ -37,10 +37,11 @@ exec_command(){
     #replace spaces with underscores
     local optkeys=${OPTKEYS//:/}
     opts="_${opts// /_}"
+    #remove _ surrounding opt keys
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
-        #find option keys and replace
-        #underscores with spaces
+        #find option keys used and 
+        #replace _ with spaces
         if [[ $opts =~ _"$k"_ ]]; then
             opts=${opts//_"$k"_/ $k }
         fi     

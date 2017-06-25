@@ -5,8 +5,13 @@ cmd_list(){
     local target=`kvget target`
     local repo_name=''
 
+    local target=`kvget target`
     if [ -n "$target" ]; then
-        repo_name=${target%\/*}
+        if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+            repo_name=${target%\/*}
+        else
+            repo_name=$target
+        fi           
     else
         repo_name=`get_current_repo`
     fi
