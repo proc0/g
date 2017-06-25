@@ -1,4 +1,5 @@
 cmd_list(){
+    set -x
     local ret=0
     #list git branches and convert to list
     local target=`kvget target`
@@ -13,7 +14,7 @@ cmd_list(){
     if [ -n "$repo_name" ]; then
         # local get_branches=$(fn repo 'git ls-remote --heads $repo;')
         # local branches=$(list $(echo "`$get_branches $repo_name`"))
-        local branches=$(list $(echo "`git branch`"))
+        local br=`git branch` branches=$(list $br)
         #discard branch ids, and format path to just branch name
         local get_paths=$(fn a '[[ $a == *\/* ]]')
         local format_path=$(fn a 'echo "${a##*/}"')
