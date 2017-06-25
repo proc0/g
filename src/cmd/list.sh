@@ -12,9 +12,9 @@ cmd_list(){
     fi
 
     if [ -n "$repo_name" ]; then
-        # local get_branches=$(fn repo 'git ls-remote --heads $repo;')
-        # local branches=$(list $(echo "`$get_branches $repo_name`"))
-        local br=`git branch` branches=$(list $br)
+        local get_branches=$(fn repo 'git branch')
+        local branches=$(list $(echo "`$get_branches $repo_name`"))
+        # local br=`git branch` branches=$(list $br)
         #discard branch ids, and format path to just branch name
         local get_paths=$(fn a '[[ $a == *\/* ]]')
         local format_path=$(fn a 'echo "${a##*/}"')
