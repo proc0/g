@@ -1,4 +1,5 @@
 cmd_request(){
+    set -x
     local ret=0
     local repo=`get_current_repo`
     local branch=`get_current_branch`
