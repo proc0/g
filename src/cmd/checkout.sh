@@ -1,4 +1,5 @@
 cmd_checkout(){
+    set -x
     local ret=0
     local stat_code=`get_status_code`
 
@@ -8,7 +9,7 @@ cmd_checkout(){
         local target=`kvget target`
         local name=`kvget name`
         local t_branch='' t_repo=''
-        
+
         if [ -n "$target" ]; then 
             if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
                 t_branch=${target#*\/}
