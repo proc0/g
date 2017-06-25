@@ -6,9 +6,18 @@ cmd_checkout(){
         echo 'Commit or stash changes first.'
     else
         local target=`kvget target`
-        local t_branch=${target#*\/}
-        local t_repo=${target%\/*}
         local name=`kvget name`
+        local t_branch='' t_repo=''
+        
+        if [ -n "$target" ]; then 
+            if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+                t_branch=${target#*\/}
+                t_repo=${target%\/*}
+            else
+                t_branch=$target
+                t_repo=`get_current_repo`
+            fi
+        fi
 
         if [ -n "$name" ]; then
             if [[ $name =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then

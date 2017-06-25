@@ -1,5 +1,4 @@
 cmd_list(){
-    set -x
     local ret=0
     #list git branches and convert to list
     local target=`kvget target`
