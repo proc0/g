@@ -65,12 +65,12 @@ set_options() {
         case $key in
             # d) debug=1;;
             #normal options w/ or w/o args
-            k|n) set_option 'name'   "$val";;
+            k|n) set_option 'name' "$val";;
             o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
-            #command shortcuts #LBMUCK
+            #command shortcuts #LBMUC
             #add option/command here & get_command
-            l|b|m|u|c|k|?)
+            l|b|m|u|c|t|?)
             #set shortcut option values
             case "$key" in
                 #pass in everything but the first arg
