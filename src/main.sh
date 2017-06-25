@@ -4,7 +4,7 @@
 main() {
     local cmd=$1
     [ -n "$cmd" ] || oops NO_COMMAND
-    #info commands have no dep options
+    #info commands have no dep opts
     [ -n "$(get_info $cmd)" ] && \
     get_info "$cmd" | more && \
     exit 0
