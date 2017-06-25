@@ -1,5 +1,4 @@
 cmd_checkout(){
-    set -x
     local ret=0
     local stat_code=`get_status_code`
 
