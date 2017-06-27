@@ -92,12 +92,12 @@ usage="
                              | REPO/BRANCH>             comment option that 
                             ~REMOTE_BRANCH              requires both title
                                                         and body of the pull
-                            -c(comment)*                request. Use a \n char
+                            -c(comment)*                request. 
                             < \"TITLE                    
-                               BODY\"                    in the comment to
-                             | \"TITLE{body}BODY\">       separate title and 
-                                                        body or use tag {body}
-                                                        before body text.
+                               BODY\"                   Use {body} to separate
+                             | \"TITLE{body}BODY\">     title from body... 
+                                                        i.e. \"Some Title \\
+                                                        {body}Body text here\".
 
 --- WIP ---
 
