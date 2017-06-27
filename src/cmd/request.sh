@@ -17,21 +17,37 @@ cmd_request(){
     && msg_title="${message%\{body\}*}" \
     && msg_body="${message#*\{body\}}" \
 
-
     ([ -z "$remote_target" -o -z "$msg_title" -o -z "$msg_body" ]) \
     && return 14 #no argval
 
-    echo "title:$msg_title, body:$msg_body, head:$user:$branch, base:$remote_target"
-    #TODO: get name of remote repo
-    # local remote_repo_name=`get_remote_repo_name`
+    # echo "title:$msg_title, \
+    #       body:$msg_body, \
+    #       head:$user:portal-core/$branch, \
+    #       base:portal-core/$remote_target"
 
+    #github API call
+    response=`curl -v \
+    -u "$user:ee693db1978cc7792f1881b3433dde25fa384f25" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: token ee693db1978cc7792f1881b3433dde25fa384f25" \
+    -X POST -d "{\"title\":\"$msg_title\",\"head\":\"$branch\",\"base\":\"$remote_target\",\"body\":\"$msg_body\"}" \
+    "https://git.autodesk.com/api/v3/repos/portal-core/ui/pulls"`
 
-    # local url="https://git.autodesk.com/$remote_repo_name/ui/compare/$remote_target...$remote_repo_name:$branch?expand=1"
-    # echo "Opening $url..."
-    #TODO: outsource this to config to open with w/e
-    # open -a "/Applications/Google Chrome.app" "$url" || ret=$?
+    _ret=$?
+    [ $_ret -gt 0 ] && ret=$_ret
 
-    # curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' https://git.autodesk.com/repos/
+    if [ -n "$response" ]; then
+        #get _links.self which has one entry - html: url
+        local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*":/{c=1}'`))
+        local url=${self_url#*:}
+
+        echo "Opening url: $url"
+        # open -a "/Applications/Google Chrome.app" "$url" || ret=$?
+    fi
 
     return $ret
+}
+
+get_remote_repo_name(){
+
 }

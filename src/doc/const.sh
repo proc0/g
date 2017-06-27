@@ -75,6 +75,9 @@ declare "KEY_23=BAD_ARGVAL"
 declare "ERR_BAD_GIT=Something wrong with git."
 declare "ERR_BAD_COMMAND=Command not found: $1"
 declare "ERR_BAD_ARGVAL=Unexpected option value $2"
+
+declare "KEY_31=RESPONSE_ERROR"
+declare "ERR_RESPONSE_ERROR=Server responded with an error."
 #OTHER
 declare "KEY_99=GENERIC"
 declare "ERR_GENERIC=:("

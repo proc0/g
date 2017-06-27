@@ -1,9 +1,6 @@
 cmd_list(){
     local ret=0
-    #list git branches and convert to list
-    local target=`kvget target`
     local repo_name=''
-
     local target=`kvget target`
     if [ -n "$target" ]; then
         if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
