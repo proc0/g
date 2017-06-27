@@ -7,11 +7,13 @@ cmd_request(){
     local branch=`get_current_branch`
     local domain=`get_remote_base_url`
     local post_url="$domain/api/v3/repos/$repo/pulls"
+
     #break up message into title and body
     local msg_title='' msg_body=''
     [[ "$msg" =~ \{body\} ]] \
     && msg_title="${msg%\{body\}*}" \
     && msg_body="${msg#*\{body\}}" \
+    
     #check arguments
     ([ -z "$branch" -o \
        -z "$base" -o \
@@ -31,21 +33,26 @@ cmd_request(){
 
     github API call
     response=`curl -v \
-    -u "$user:ee693db1978cc7792f1881b3433dde25fa384f25" \
+    -u "$user:${access_token}" \
     -H "Content-Type: application/json" \
-    -H "Authorization: token ee693db1978cc7792f1881b3433dde25fa384f25" \
-    -X POST -d "{\"title\":\"$msg_title\",\"head\":\"$branch\",\"base\":\"$base\",\"body\":\"$msg_body\"}" \
+    -H "Authorization: token ${access_token}" \
+    -X POST -d "{ \
+        \"title\":\"$msg_title\", \
+        \"head\":\"$branch\", \
+        \"base\":\"$base\", \
+        \"body\":\"$msg_body\" \
+        }" \
     "$post_url"`
 
     _ret=$?
     [ $_ret -gt 0 ] && ret=$_ret
-
+    #open github pr url
     if [ -n "$response" ]; then
         #get _links.self which has one entry - html: url
-        local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*:/{c=1}'`))
-        local url=`sed -e 's/\(https:\/\/\)\([^\/]*\)\(.*\)/\1\2\3/g' <<<$self_url`
+        # local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*:/{c=1}'`))
+        # local url=`sed -e 's/\(https:\/\/\)\([^\/]*\)\(.*\)/\1\2\3/g' <<<$self_url`
 
-        echo "Opening url: $self_url"
+        echo "$response"
         # open -a "/Applications/Google Chrome.app" "$url" || ret=$?
     fi
 
