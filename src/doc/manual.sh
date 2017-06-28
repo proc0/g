@@ -7,17 +7,26 @@ usage="
 ### NAME
     $x -- git command line workflow toolkit 
 
+
 ### SYNOPSIS
-    $x  [ COMMAND ] [ -OPTION <VALUE>... ]
-    $x  [ h | v | s ]
+    $x  [ INFO COMMAND ]
+       [ h | v | s ]
+        
+    $x  [ SHORTCUT COMMAND ] <VALUE>
+       [ -l | -b | -m | -u ] <TARGET | BRANCH | REPO/BRANCH>
+       [ -c | -k ] <COMMENT | NAME>
+
+    $x  [ COMMAND ] [ -option1 <VALUE1> -option2 <VALUE2>... ]
        [ ls | br | mr | up ] [ -t <TARGET> ]
        [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
        [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
        [ pr | df ] [ -t* <TARGET> ] 
 
+
 ### DESCRIPTION
     A set of git worfklows wrapped in shortcut commands.
-    
+
+
 ### COMMANDS
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
                             <OPTION TYPE>--DEFAULT          
@@ -145,6 +154,7 @@ usage="
                             The path to the directory where the init 
                             command will clone and run scripts to 
                             initialize the codebase. Defaults to current.
+
 
 ### EXAMPLES
     WORKFLOW                    COMMAND
