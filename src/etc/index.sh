@@ -1,9 +1,11 @@
 
-parse_config(){
+parse_yml(){
+    local ret=0 path=$1 prefix=$2
     #load config file
     # echo "using config: $config"
 
-    eval $(parse_yaml $config)
+    eval $(parse_yaml "$path" "$prefix") || ret=$?
+    return $ret
     # repo="${repos[0]% : *}"
     # url="${repos[0]#* : }"
     # echo $url

@@ -1,0 +1,14 @@
+configure:
+  - status: cmd_status s
+  - ui: cmd_ui
+  - list: cmd_list ls -l
+  - branch: cmd_branch br -b
+  - update: cmd_update up -u
+  - checkin: cmd_checkin ci -c
+  - checkout: cmd_checkout co -k
+  - merge: cmd_merge mr -m
+  - request: cmd_request pr
+  - install: cmd_install in
+  - clone: cmd_clone cl
+  - config: cmd_config cf
+  - diff: cmd_diff df

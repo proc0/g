@@ -1,5 +1,5 @@
 . $src_dir/src/cmd/index.sh
-# debug=0
+cmd_config=$src_dir/src/cmd/config.yml
 #main :: $@ -> IO()
 main() {
     local cmd=$1
@@ -13,10 +13,8 @@ main() {
     #main event
     local ret=0
     clear_options
-    parse_config || ret=$? && \
+    parse_yml "$config" 'cfg_' && \
     exec_command "$@" || ret=$?
-    #turn off debug
-    # [ $debug -eq 1 ] && set -
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
     #or err code for human :(
@@ -63,7 +61,6 @@ set_options() {
         #get arg value 
         local val="${OPTARG}"       
         case $key in
-            # d) debug=1;;
             #normal options w/ or w/o args
             k|n) set_option 'name' "$val";;
             o) set_option 'output' "$val";;
@@ -76,10 +73,7 @@ set_options() {
                 #pass in everything but the first arg
                 #for comments only
                 c) set_option 'comment' "$val";;
-                # k) local repo=`get_current_repo` && \
-                #    set_option 'name' "$val" && \
-                #    set_option 'target' "$repo";;
-                   #getopts sets key to : if val=null
+                #getopts sets key to : if val=null
                 b|*) [[ $key == ':' && $val != 'b' ]] && \
                    local repo=`get_current_repo` && \
                    local branch=`get_current_branch` && \
@@ -90,55 +84,47 @@ set_options() {
                    set_option 'target' "$val";;
             esac;;
         esac
-        _ret=$?
-        #keep track of error code
-        [ $_ret -gt $ret ] && ret=$_ret
+        #keep track of err code
+        local _ret=$? && \
+        [ $_ret -gt $ret ] && \
+        ret=$_ret
     done
     shift "$((OPTIND-1))"
-    # [ $debug -eq 1 ] && set -x
     return $ret
 }
-#TODO: read command configuration from
-#      yaml file and programmatically
-#      add commands and option inputs
 #map commands to handlers
-#get_command :: String -> (()IO -> Int)
+#get_command :: 
 get_command(){
-    local ret=0 cmd="$@"
-    #shortcut map
-    case "$1" in
-        -l) cmd='ls';;
-        -b) cmd='br';;
-        -m) cmd='mr';;
-        -u) cmd='up';;
-        -c) cmd='ci';;
-        -k) cmd='co';;
-    esac
-    #command map
-    case $cmd in
-        #optionless commands
-        stats|stat|s)   cmd_status;;
-        ui)             cmd_ui;;
-        #simple commands performed 
-        #on current repo/branch
-        list|ls)        cmd_list;;
-        branch|br)      cmd_branch;;
-        update|up)      cmd_update;;
-        #compound commands with options
-        checkin|ci)     cmd_checkin;;
-        checkout|co)    cmd_checkout;;
-        request|pr)     cmd_request;;
-        merge|mr)       cmd_merge;;
-        install|in)     cmd_install;;
-        clone|cl)       cmd_clone;;
-        diff|df)        cmd_diff;;
-        config|cf)      cmd_config;;
-        #wrong command
-        *) ret=22
-    esac
-    _ret=$? #captures last code
-    #update return value if needed
-    [[ "$_ret" -gt 0 ]] && ret=$_ret
+    local ret=0 cmd="$1" cmd_len=0
+    #get command properties list
+    parse_yml "$cmd_config" 'cmd_'
+    cmd_len=${#cmd_configure[@]}
+    while [ $cmd_len -gt 0 -o $cmd_len -eq 0 ]; do
+        local idx=$((cmd_len-1))
+        if [ $idx -gt 0 -o $idx -eq 0 ]; then
+            local pair=${cmd_configure[$idx]} \
+                #split pair into 1st and 2nd field w/ cut
+                cmd_name=$(echo `cut -d ':' -f 1 <<<"$pair"`) \
+                #note: 2nd field may contain delim (in url)
+                cmd_props=($(echo `cut -d ':' -f 2 <<<"$pair"`)) \
+                #example url=$(echo `cut -d ':' -f 2,3,4 <<< $pair`)
+                cmd_handler=${cmd_props[0]} \
+                cmd_alias=${cmd_props[1]} \
+                cmd_shortcut=${cmd_props[2]};
+            #match name, alias, or shortcut flag
+            if [[ "$cmd" == "$cmd_shortcut" || \
+                  "$cmd" == "$cmd_alias" || \
+                  "$cmd" == "$cmd_name" ]]; then
+                $cmd_handler || ret=$?
+            fi
+        fi
+        #countdown
+        cmd_len=$idx
+        #keep track of err code
+        local _ret=$? && \
+        [ $_ret -gt $ret ] && \
+        ret=$_ret
+    done
     return $ret
 }
 #hybrid shortcuts with no 
@@ -154,9 +140,9 @@ get_info(){
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=0
-    local val="$2"
+    local val=$2
     [ -z "$val" ] && ret=14 #no option value!
-    # echo "setting option $1 to $2"
+    # echo "setting option $1 to $val"
     #replace underscores with spaces
     kvset "$1" "${val//_/ }"
     return $ret

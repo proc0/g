@@ -1,5 +1,5 @@
 access_token: ACCESS_TOKEN
 targets:
-  default : origin/master
+  default: origin/master
 remotes:
-  - origin : https://github.com/proc0/g.git
+  - origin: https://github.com/proc0/g.git
