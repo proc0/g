@@ -63,7 +63,7 @@ cmd_request(){
     #open github pr url
     if [ -n "$response" ]; then
         #get _links.self which has one entry - html: url
-        # local self_url=($(echo `awk '/self/{ getline; print $0 }'`))
+        # local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*:/{c=1}'`))
         # local url=`sed -e 's/\(https:\/\/\)\([^\/]*\)\(.*\)/\1\2\3/g' <<<$self_url`
 
         echo "$response"
