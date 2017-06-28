@@ -60,14 +60,17 @@ cmd_request(){
 
     local _ret=$?
     [ $_ret -gt 0 ] && ret=$_ret
-    #open github pr url
-    if [ -n "$response" ]; then
-        #get _links.self which has one entry - html: url
-        # local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*:/{c=1}'`))
-        # local url=`sed -e 's/\(https:\/\/\)\([^\/]*\)\(.*\)/\1\2\3/g' <<<$self_url`
 
-        echo "$response"
-        # open -a "/Applications/Google Chrome.app" "$url" || ret=$?
+    #parse JSON to get PR url
+    if [ -n "$response" ]; then
+        #TODO: parse JSON without dependencies
+        local self_url=`echo "$response" | python -c "import json,sys;obj=json.load(sys.stdin);print obj['_links']['self']['href'];"`
+        local pr_num=`echo ${self_url##*/} | sed -e 's/\([0-9]+\)/\1/'`
+        #github url for this pr
+        local pr_url="$domain/$repo/pull/$pr_num"
+        
+        echo "$pr_url"
+        open -a "/Applications/Google Chrome.app" "$pr_url" || ret=$?
     fi
 
     return $ret
