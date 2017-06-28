@@ -49,7 +49,7 @@ declare "ALR_WARNING=☣ ${YELLOW}"
 declare "ALR_ERROR=☠ ${RED} ${L_RED}"
 
 #ASSORTED TEXT
-declare "TXT_SELECT_BRANCH=Please select a branch number:"
+declare "TXT_SELECT_BRANCH=${GREEN}Please select a branch number:${NONE}"
 declare "TXT_FETCHING_BRANCH=⌛  fetching branch list..."
 declare "TXT_FETCHING_DATA=⌛  fetching remote data..."
 declare "TXT_UP_TO_DATE=Already up to date."

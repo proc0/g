@@ -27,14 +27,17 @@ cmd_checkout(){
                 git checkout -b "$branch"
                 git push -u "$repo" "$branch"
             else
+                t_repo=`get_current_repo`                
                 # echo "no name br: $name, rp: $target"
                 git checkout -b "$name"
-                git push -u "$t_repo" "$t_branch"
+                git push -u "$t_repo" "$name"
             fi
         else
-            name="$t_branch_$(date +%s)"
+            name="${t_branch}_$(date +%s)"
+            t_repo=`get_current_repo`                
+
             git checkout -b "$name"
-            git push -u "$t_repo" "$t_branch"
+            git push -u "$t_repo" "$name"
         fi
     fi
     cmd_status

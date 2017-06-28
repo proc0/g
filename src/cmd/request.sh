@@ -1,27 +1,41 @@
 cmd_request(){
     local ret=0
-        msg=`kvget comment` \
-        base=`kvget target` \
-        user=`get_username` \
-        repo=`get_remote_repo_name` \
-        branch=`get_current_branch` \
-        domain=`get_remote_base_url` \
-        post_url="$domain/api/v3/repos/$repo/pulls";
+    local msg=`kvget comment`
+    local target=`kvget target`
+    local user=`get_username`
+    local repo=`get_remote_repo_name`
+    local branch=`get_current_branch`
+    local domain=`get_remote_base_url`
+
+    local post_url="$domain/api/v3/repos/$repo/pulls";
+
+    local base=''
+    #TODO: cross repo pull requests
+    if [ -n "$target" ]; then 
+        if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+            t_branch=${target#*/}
+            # t_repo=${target%/*}
+        else
+            t_branch=$target
+            # t_repo=`get_current_repo`
+        fi
+        base=$t_branch
+    fi
 
     #break up message into title and body
     local msg_title='' msg_body=''
-    [[ "$msg" =~ \{body\} ]] \
-    && msg_title="${msg%\{body\}*}" \
-    && msg_body="${msg#*\{body\}}" \
+    [[ "$msg" =~ \{body\} ]] &&
+    msg_title="${msg%\{body\}*}" &&
+    msg_body="${msg#*\{body\}}"
     
     #check arguments
     ([ -z "$branch" -o \
        -z "$base" -o \
        -z "$msg_title" -o \
-       -z "$msg_body" ]) \
-    && [[ $post_url =~ https:\/\/ ]] \
-    && [[ $post_url =~ [^repos\/\/] ]] \
-    && return 14 #bad option values
+       -z "$msg_body" ]) &&
+    [[ $post_url =~ https:\/\/ ]] &&
+    [[ $post_url =~ [^https:]\/\/ ]] &&
+    return 14 #bad option values
 
     #payload example
     echo "Raising pull request...
@@ -33,9 +47,9 @@ cmd_request(){
 
     #github API call
     local response=`curl -v \
-        -u "$user:${access_token}" \
+        -u "$user:${cfg_access_token}" \
         -H "Content-Type: application/json" \
-        -H "Authorization: token ${access_token}" \
+        -H "Authorization: token ${cfg_access_token}" \
         -X POST -d "{ \
             \"title\":\"$msg_title\", \
             \"head\":\"$branch\", \
@@ -49,7 +63,7 @@ cmd_request(){
     #open github pr url
     if [ -n "$response" ]; then
         #get _links.self which has one entry - html: url
-        # local self_url=($(echo `awk -v var="$response" 'c&&!--c;/.*self.*:/{c=1}'`))
+        # local self_url=($(echo `awk '/self/{ getline; print $0 }'`))
         # local url=`sed -e 's/\(https:\/\/\)\([^\/]*\)\(.*\)/\1\2\3/g' <<<$self_url`
 
         echo "$response"
@@ -60,8 +74,8 @@ cmd_request(){
 }
 
 get_remote_repo_name(){
-    local repo_url=`get_remote_url` \
-        repo_name=`dirname $repo_url | sed -e 's/.*\/\(.*\)/\1/'` \
+    local repo_url=`get_remote_url`
+    local repo_name=`dirname "$repo_url" | sed -e 's/.*\/\(.*\)/\1/'` \
         repo_main=`echo ${repo_url##*/} | sed -e 's/\(.*\).git/\1/'`;
     echo "$repo_name/$repo_main"
 }
