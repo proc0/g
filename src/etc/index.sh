@@ -1,29 +1,4 @@
-
-parse_yml(){
-    local ret=0 path=$1 prefix=$2
-    #load config file
-    # echo "using config: $config"
-
-    eval $(parse_yaml "$path" "$prefix") || ret=$?
-    return $ret
-    # repo="${repos[0]% : *}"
-    # url="${repos[0]#* : }"
-    # echo $url
-    # echo "$targets_default"
-    # for i in ${remotes[@]}; do
-    #     local repo="`printf ${remotes[$i]% : *}`"
-    #     # local url="${remotes[$i]#* : }"
-    #     printf "using ${repo}"
-    #     # echo 'blah'"`echo ${remotes[i]}`'blah'
-    # done
-    # printf "${remotes[@]}"
-}
-
-get_status(){
-    echo "`const STS $(get_status_code)`"
-}
-
-: <<blah
+: <<notes
 ' ' = unmodified
 
 M = modified
@@ -63,7 +38,11 @@ U           U    unmerged, both modified
 ?           ?    untracked
 !           !    ignored
 -------------------------------------------------
-blah
+notes
+
+get_status(){
+    echo "`const STS $(get_status_code)`"
+}
 
 get_status_code(){
     #TODO fix status codes and allow multiple codes
@@ -182,6 +161,12 @@ get_remotes(){
 get_username(){
     local user=`git config --global user.name`
     echo $user
+}
+
+parse_yml(){
+    local ret=0 path=$1 prefix=$2
+    eval $(parse_yaml "$path" "$prefix") || ret=$?
+    return $ret
 }
 
 parse_yaml() {

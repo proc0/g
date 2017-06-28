@@ -20,22 +20,27 @@ usage="
     
 ### COMMANDS
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
-                            <TYPE A | TYPE B>~DEFAULT          
+                            <OPTION TYPE>--DEFAULT          
     ------------------------------------------------------------------------
+    version     v|-v                                    Show version.
 
-    stats       st|s                                    Show current state 
-                                                        and git status.
+
+    help        h|-h                                    Show this.
+
+
+    stats       s                                       Show current branch
+                                                        and local status.
 
 
     list        ls|-l       -t(target)                  List branches
-                            <REPO>~CURRENT_REPO         from a target repo.
+                            <REPO>--CURRENT_REPO        from a target repo.
                                                         Defaults to current.
 
 
     branch      br|-b       -t(target)                  Switch to a branch.
                             <BRANCH                     Target is optional,
                             | REPO/BRANCH>              and can be either 
-                            ~INTERACTIVE                a branch or a 
+                            --INTERACTIVE               a branch or a 
                                                         repo/branch.
 
 
@@ -43,19 +48,19 @@ usage="
                             <TARGET                     remote branch.
                              | BRANCH                   Defaults to the
                              | REPO/BRANCH>             current branch's 
-                            ~REMOTE_BRANCH              tracked remote.
+                            --REMOTE_BRANCH             tracked remote.
 
 
     update      up|-u       -t(target)                  Update remotes list-
-                            <REPO>~REMOTE(S)            ed in config file,
-                                                        or specify a remote.
+                            <TARGET | REPO>             ed in config file,
+                            --REMOTE_REPO(S)            or specify a remote.
 
 
     checkin     ci|-c*      -t(target)                  Add all changed
                             <TARGET                     files, commit with
                              | BRANCH                   comment message,
                              | REPO/BRANCH>             and push changes
-                            ~REMOTE_BRANCH              to current tracked
+                            --REMOTE_BRANCH             to current tracked
                                                         remote branch by 
                             -c(comment)*<STRING>        default.
                                                         
@@ -64,18 +69,19 @@ usage="
                             <TARGET                     current branch.
                              | BRANCH                   Optional target if
                              | REPO/BRANCH>             not branching from
-                            ~REMOTE_BRANCH              selected branch.
+                            --REMOTE_BRANCH              selected branch.
                                                         Name defaults to 
                             -k|-n(name)                 generated parent
-                            <STRING>~BASE_TIMESTAMP     name + timestamp.  
+                            <STRING>                    name + timestamp.  
+                            --BASE_TIMESTAMP
 
 
     install     in          -t(target)*                 Create a git repo
-                            <REPO                       in the current dir.,
-                             | REPO_URL>                and push to a remote
-                                                        target. Optional 
-                            -o(output)                  output to a diff-
-                            <PATH>~CURRENT_DIR          erent directory.
+                            <REPO | REPO_URL>           in the current dir.,
+                                                        and push to a remote
+                            -o(output)                  target. Optional 
+                            <PATH>                      output to a diff-
+                            --CURRENT_DIR               erent directory.
 
 
     clone       cl          -t(target)*                 Clone a git repo
@@ -83,33 +89,32 @@ usage="
                              | REPO_URL>                configurations. 
                                                         Creates a dir. with
                             -o(output)                  the repo name by 
-                            <PATH>~CURRENT_DIR          default.
+                            <PATH>--CURRENT_DIR         default.
 
 
     request     pr          -t(target)*                 Build a pull request
                             <TARGET                     with the target as 
                              | BRANCH                   the base. Provide a
                              | REPO/BRANCH>             comment option that 
-                            ~REMOTE_BRANCH              requires both title
+                            --REMOTE_BRANCH             requires both title
                                                         and body of the pull
                             -c(comment)*                request. 
-                            < \"TITLE                    
-                               BODY\"                   Use {body} to separate
-                             | \"TITLE{body}BODY\">     title from body... 
+                            <STRING:FORMAT=             Use {body} to separate
+                            \"TITLE{body}BODY\">        title from body...            
                                                         i.e. \"Some Title \\
                                                         {body}Body text here\".
 
 --- WIP ---
 
-    diff        df          -t(target)*                 Run a git diff (WIP)
-
-                                                        
     config      cf          -t<target>=DEFAULT_TARGET   Configure the remote
                             -n<name>=SET_AS_DEFAULT     targets and/or set
                                                         the default target by
                                                         using a literal 
                                                         remote/branch name, or
                                                         target label. (WIP)
+
+
+    diff        df          -t(target)*                 Run a git diff (WIP)
 
 
     ui          ui                                      (WIP)
