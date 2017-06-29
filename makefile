@@ -1,5 +1,5 @@
 NAME=g
-VERSION=0.01.02
+VERSION=0.01.1
 
 DIRS=.
 PREFIX?=/usr/local/lib
