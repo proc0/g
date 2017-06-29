@@ -1,5 +1,3 @@
-. $src_dir/src/cmd/index.sh
-cmd_config=$src_dir/src/cmd/config.yml
 #main :: $@ -> IO()
 main() {
     local cmd=$1
@@ -21,6 +19,16 @@ main() {
     err_key=`const KEY $ret`
     [ -z "$err_key" ] && err_key=$ret
     oops "$err_key" "$@"
+}
+#hybrid shortcuts with no 
+#environment dependencies
+#get_info :: $@ -> IO()
+get_info(){
+    . $src_dir/src/doc/manual.sh
+    case "$@" in 
+        h|-h|help) echo "$usage";;
+        v|-v|version) echo "$VERSION";;
+    esac
 }
 #exec_command :: $@ -> (()IO -> Int)
 exec_command(){
@@ -126,33 +134,4 @@ get_command(){
         ret=$_ret
     done
     return $ret
-}
-#hybrid shortcuts with no 
-#environment dependencies
-#get_info :: $@ -> IO()
-get_info(){
-    . $src_dir/src/doc/manual.sh
-    case "$@" in 
-        h|-h|help) echo "$usage";;
-        v|-v|version) echo "$VERSION";;
-    esac
-}
-# set_option :: Key -> Value -> ErrorCode -> IO()
-set_option(){
-    local ret=0
-    local val=$2
-    [ -z "$val" ] && ret=14 #no option value!
-    # echo "setting option $1 to $val"
-    #replace underscores with spaces
-    kvset "$1" "${val//_/ }"
-    return $ret
-}
-# clear_options :: () -> IO()
-clear_options(){
-    #TODO: abstract to some option config
-    kvset branch ""
-    kvset target ""
-    kvset comment ""
-    kvset output ""
-    kvset name ""
 }

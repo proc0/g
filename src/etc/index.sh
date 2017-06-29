@@ -1,3 +1,23 @@
+# set_option :: Key -> Value -> ErrorCode -> IO()
+set_option(){
+    local ret=0
+    local val=$2
+    [ -z "$val" ] && ret=14 #no option value!
+    # echo "setting option $1 to $val"
+    #replace underscores with spaces
+    kvset "$1" "${val//_/ }"
+    return $ret
+}
+# clear_options :: () -> IO()
+clear_options(){
+    #TODO: abstract to some option config
+    kvset branch ""
+    kvset target ""
+    kvset comment ""
+    kvset output ""
+    kvset name ""
+}
+
 : <<notes
 ' ' = unmodified
 
