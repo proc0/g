@@ -1,3 +1,4 @@
+# command: handler alias -shortcut
 configure:
   - status: cmd_status s
   - ui: cmd_ui

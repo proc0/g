@@ -1,15 +1,22 @@
+# fst :: String -> String
+fst(){
+    echo `get_nth "$1" 1`
+}
+# snd :: String -> String
+snd(){
+    echo `get_nth "$1" 2`
+}
+# get_nth :: String -> Index -> Delim -> String
+get_nth(){
+    #note: 2nd field may contain delim (in url)
+    #example url=$(echo `cut -d ':' -f 2,3,4 <<< $pair`)
 
-defn nothing a 'return 0'
+    local delim=$3
+    [ -z $delim ] && delim=':'
 
-defn identity a 'echo $a'
-defn maybe a 'if [ -n "$a" ]; then $identity "$a"; else $nothing; fi'
-
-defn _id a '
-    echo $(map $identity $(list $a))'
-
-defn _concat a b '
-    echo "$_id $(list $($_id $(list $a)) $($_id $(list $b)))"'
-
+    cut -d "$delim" -f "$2" <<<"$1"
+}
+# zip :: String -> String -> String
 defn _zip a b c '
     a1=(`echo "$a"`)
     b1=(`echo "$b"`)
@@ -28,18 +35,7 @@ defn _zip a b c '
     done;
     echo $rv;'
 
-defn _times str n '
-    idx=0
-    len=$n
-    list=""
-    if [ $len -gt 0 ]; then
-        while [ $idx -lt $len ]; do
-            list="$list$str"
-            idx=$((idx+1))
-        done
-    fi
-    echo $list'
-
+# spread :: String -> String
 _spread(){
     local str="$*" newstr=""
     if [ -n "$str" ]; then
@@ -53,3 +49,15 @@ _spread(){
     fi
     echo "$newstr"
 }
+
+# defn _times str n '
+#     idx=0
+#     len=$n
+#     list=""
+#     if [ $len -gt 0 ]; then
+#         while [ $idx -lt $len ]; do
+#             list="$list$str"
+#             idx=$((idx+1))
+#         done
+#     fi
+#     echo $list'
