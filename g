@@ -5,6 +5,7 @@
 src_exe=${BASH_SOURCE[0]}
 src_dir=`dirname "$src_exe"`
 # user configuration path
+# TODO: copy config on install?
 [ -f $(pwd)/$CFGNAME ] &&
 config=$(pwd)/$CFGNAME ||
 config=$src_dir/$CFGNAME;

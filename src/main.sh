@@ -59,6 +59,7 @@ exec_command(){
     get_command "$cmd" || ret=$?
     return $ret
 }
+#TODO : abstract options to config file
 #map command options to setters
 #set_option :: $@ -> (()IO -> Int)
 set_options() {
