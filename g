@@ -1,5 +1,5 @@
 #!/bin/bash
-# g -- git shortcut tool 
+# g -- git terminal user interface
 # author: proc0@github.com
 # init global path vars
 src_exe=${BASH_SOURCE[0]}
@@ -14,12 +14,12 @@ cmd_config=$src_dir/src/cmd/config.yml
 # external libs
 # bash-lambda (loads from .profile)
 . $src_dir/lib/kvbash.sh
-# internal subroutines
+# 
 # careful reordering !
-. $src_dir/src/doc/const.sh
+. $src_dir/src/doc/const.sh #static
 . $src_dir/src/etc/lambda.sh 1>/dev/null
-. $src_dir/src/etc/index.sh
-. $src_dir/src/tui/index.sh
+. $src_dir/src/etc/index.sh #< utils ^
+. $src_dir/src/tui/index.sh #display
 # load command handlers
 . $src_dir/src/cmd/index.sh
 # load main subroutines
