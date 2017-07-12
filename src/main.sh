@@ -10,7 +10,7 @@ main() {
     #main event
     local ret=0
     clear_options
-    parse_yml "$config" 'cfg_' &&
+    parse_yml "$CONFIG" 'cfg_' &&
     exec_command "$@" || ret=$?
     #clean exit if zero
     [ $ret -eq 0 ] && exit 0
@@ -23,9 +23,8 @@ main() {
 #environment dependencies
 #get_info :: String -> IO String
 get_info(){
-    . $src_dir/src/doc/manual.sh
     case "$@" in 
-        h|-h|help) echo "$usage";;
+        h|-h|help) . $MANUAL && echo "$usage";;
         v|-v|version) echo "$VERSION";;
     esac
 }
@@ -101,7 +100,7 @@ set_options() {
 get_command(){
     local ret=0 cmd=$1 cmd_len=0
     #get command properties list
-    parse_yml "$cmd_config" 'cmd_'
+    parse_yml "$CMD_CONFIG" 'cmd_'
     cmd_len=${#cmd_configure[@]}
     # iterate commands, and access its properties
     while [ $cmd_len -gt 0 -o $cmd_len -eq 0 ]; do

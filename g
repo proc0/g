@@ -1,30 +1,32 @@
 #!/bin/bash
 # g -- git terminal user interface
 # author: proc0@github.com
-# init global path vars
-src_exe=${BASH_SOURCE[0]}
-src_dir=`dirname "$src_exe"`
+# init global constants
+SRC_EXE=${BASH_SOURCE[0]}
+SRC_DIR=`dirname "$SRC_EXE"`
+# load constants
+. $SRC_DIR/src/doc/const.sh
+
 # user configuration path
 # TODO: copy config on install?
 [ -f $(pwd)/$CFGNAME ] &&
-config=$(pwd)/$CFGNAME ||
-config=$src_dir/$CFGNAME;
+CONFIG=$(pwd)/$CFGNAME ||
+CONFIG=$SRC_DIR/$CFGNAME;
 # command configuration path
-cmd_config=$src_dir/src/cmd/config.yml
+CMD_CONFIG=$SRC_DIR/src/cmd/config.yml
+MANUAL=$SRC_DIR/src/doc/manual.sh
 
 # external libs
 # bash-lambda (loads from .profile)
-. $src_dir/lib/kvbash.sh
-# 
-# careful reordering !
-. $src_dir/src/doc/const.sh #static
-. $src_dir/src/etc/lambda.sh 1>/dev/null
-. $src_dir/src/etc/index.sh #< utils ^
-. $src_dir/src/tui/index.sh #display
+. $SRC_DIR/lib/kvbash.sh
+# source libs
+. $SRC_DIR/src/etc/lambda.sh 1>/dev/null
+. $SRC_DIR/src/etc/index.sh #< utils ^
+. $SRC_DIR/src/tui/index.sh #display
 # load command handlers
-. $src_dir/src/cmd/index.sh
+. $SRC_DIR/src/cmd/index.sh
 # load main subroutines
-. $src_dir/src/main.sh
+. $SRC_DIR/src/main.sh
 # main :: IO String -> IO ()
 main "$@"
 

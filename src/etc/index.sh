@@ -66,10 +66,10 @@ get_status(){
 
 get_status_code(){
     #TODO fix status codes and allow multiple codes
-    local stat=`git status`
+    local stat="`git status`"
     local code=GENERIC
 
-    local isDetached=`echo $stat | grep 'HEAD detached'`
+    local isDetached="`echo $stat | grep 'HEAD detached'`"
     [ -n "$isDetached" ] && code=DETACHED && echo "$code"
 
     if [[ $stat =~ .*modified.* ]]; then
@@ -110,19 +110,25 @@ get_current_repo(){
 #check_env :: IO() -> ERROR_LABEL
 check_env(){
     local ret=0
+
+    #exceptions - no environment needed
+    [[ "$1" == 'cl' ]] && return 0
+
+    #check config file
+    [ -f "$CONFIG" ] || ret=11 &&
+    #check that current dir is a git directory
+    git status 2>/dev/null 1>&/dev/null || ret=10 &&
+    #check remote connection: TODO use a nuetral command
+    git fetch 2>/dev/null 1>&/dev/null || ret=12
+
+    [ $ret -gt 0 ] && return $ret
+
     #TODO consolidate status 
     #check with get_status
     local _stat=`get_status`
-    #exceptions - no environment needed
-    [[ "$1" == 'cl' ]] && return 0
-    #check config file
-    ([ -e "$config" ] || ret=11) && \
-    #check that current dir is a git directory
-    (git status 2>/dev/null 1>&/dev/null || ret=10) && \
-    #check remote connection: TODO use a nuetral command
-    (git fetch 2>/dev/null 1>&/dev/null ||  ret=12) && \
     #HEAD is detached
-    [[ "$_stat" == 'DETACHED' ]] && ret=0
+    [[ $_stat =~ .*DETACHED.* ]] && ret=0
+
     return $ret
 }
 
