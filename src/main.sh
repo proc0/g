@@ -1,4 +1,4 @@
-#main :: IO String -> IO ()
+#main :: IO ()
 main() {
     local cmd=$1
     [ -n "$cmd" ] || oops NO_COMMAND
@@ -21,14 +21,14 @@ main() {
 }
 #hybrid shortcuts with no 
 #environment dependencies
-#get_info :: String -> IO String
+#get_info :: String -> IO ()
 get_info(){
     case "$@" in 
         h|-h|help) . $MANUAL && echo "$usage";;
         v|-v|version) echo "$VERSION";;
     esac
 }
-#exec_command :: String -> (IO String -> Int)
+#exec_command :: String -> IO Int
 exec_command(){
     local ret=0 cmd=$1 argv=$@ opts=''
     #split cmd from opts:

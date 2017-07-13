@@ -33,7 +33,8 @@ C = copied
 
 U = updated but unmerged
 
-Ignored files are not listed, unless --ignored option is in effect, in which case XY are !!.
+Ignored files are not listed, unless --igno
+red option is in effect, in which case XY are !!.
 
 X          Y     Meaning
 -------------------------------------------------
