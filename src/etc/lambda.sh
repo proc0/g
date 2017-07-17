@@ -17,23 +17,42 @@ get_nth(){
     cut -d "$delim" -f "$2" <<<"$1"
 }
 # zip :: String -> String -> String
-defn _zip a b c '
-    a1=(`echo "$a"`)
-    b1=(`echo "$b"`)
-    len_a="${#a1[@]}"
-    len_b="${#b1[@]}"
-    len=$([[ $len_a -gt $len_b ]] && echo $len_a || echo $len_b)
-    __=$([ -n "$c" ] && echo $c || echo :)
+_zip(){
+    [ -z "$1" ] || [ -z "$2" ] &&
+    return 1
 
-    rv=""
-    idx=0 
+    local a1=(`echo "$1"`) b1=(`echo "$2"`) delim=":" rv="" idx=0
+    local len_a=${#a1[@]} len_b=${#b1[@]}
+    local len=$([[ $len_a -gt $len_b ]] && echo $len_a || echo $len_b)
+    [ -n "$3" ] && delim="$3"
+    
     while [ $idx -lt $len ]; do
-        _a1="${a1[$idx]}";
-        _b1="${b1[$idx]}";
-        rv="$rv $_a1$__$_b1"
-        idx=$((idx+1));
+        a2="${a1[$idx]}"
+        b2="${b1[$idx]}"
+        rv="$rv $a2$delim$b2"
+        idx=$((idx+1))
     done;
-    echo $rv;'
+    echo $rv
+}
+
+# zip :: String -> String -> String
+# defn _zip a b c '
+#     a1=(`echo "$a"`)
+#     b1=(`echo "$b"`)
+#     len_a="${#a1[@]}"
+#     len_b="${#b1[@]}"
+#     len=$([[ $len_a -gt $len_b ]] && echo $len_a || echo $len_b)
+#     __=$([ -n "$c" ] && echo $c || echo :)
+
+#     rv=""
+#     idx=0 
+#     while [ $idx -lt $len ]; do
+#         _a1="${a1[$idx]}";
+#         _b1="${b1[$idx]}";
+#         rv="$rv $_a1$__$_b1"
+#         idx=$((idx+1));
+#     done;
+#     echo $rv;'
 
 # spread :: String -> String
 _spread(){
