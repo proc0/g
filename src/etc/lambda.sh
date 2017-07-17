@@ -6,6 +6,7 @@ fst(){
 snd(){
     echo `get_nth "$1" 2`
 }
+
 # get_nth :: String -> Index -> Delim -> String
 get_nth(){
     #note: 2nd field may contain delim (in url)
@@ -16,6 +17,7 @@ get_nth(){
 
     cut -d "$delim" -f "$2" <<<"$1"
 }
+
 # zip :: String -> String -> String
 _zip(){
     [ -z "$1" ] || [ -z "$2" ] &&
@@ -35,25 +37,6 @@ _zip(){
     echo $rv
 }
 
-# zip :: String -> String -> String
-# defn _zip a b c '
-#     a1=(`echo "$a"`)
-#     b1=(`echo "$b"`)
-#     len_a="${#a1[@]}"
-#     len_b="${#b1[@]}"
-#     len=$([[ $len_a -gt $len_b ]] && echo $len_a || echo $len_b)
-#     __=$([ -n "$c" ] && echo $c || echo :)
-
-#     rv=""
-#     idx=0 
-#     while [ $idx -lt $len ]; do
-#         _a1="${a1[$idx]}";
-#         _b1="${b1[$idx]}";
-#         rv="$rv $_a1$__$_b1"
-#         idx=$((idx+1));
-#     done;
-#     echo $rv;'
-
 # spread :: String -> String
 _spread(){
     local str="$*" newstr=""
@@ -69,14 +52,10 @@ _spread(){
     echo "$newstr"
 }
 
-# defn _times str n '
-#     idx=0
-#     len=$n
-#     list=""
-#     if [ $len -gt 0 ]; then
-#         while [ $idx -lt $len ]; do
-#             list="$list$str"
-#             idx=$((idx+1))
-#         done
-#     fi
-#     echo $list'
+# consants getter
+# const :: Prefix -> Label -> String
+const() { 
+    local prefix=$1 label=$2
+    local i="${prefix}_$label"
+    echo "${!i}"
+}
