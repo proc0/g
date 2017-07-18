@@ -17,7 +17,6 @@ CMD_CONFIG=$SRC_DIR/src/cmd/config.yml
 MANUAL=$SRC_DIR/src/doc/manual.sh
 
 # external libs
-# bash-lambda (loads from .profile)
 . $SRC_DIR/lib/kvbash.sh
 # source libs
 . $SRC_DIR/src/etc/lambda.sh 1>/dev/null

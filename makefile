@@ -9,7 +9,7 @@ INSTALL_DIR=$(PREFIX)/$(NAME)
 INSTALL_DIRS=`find $(DIRS) \( ! -regex '.*/\..*' \) -type d 2>/dev/null`
 INSTALL_FILES=`find $(DIRS) \( ! -regex '.*/\..*' \) -type f 2>/dev/null`
 
-BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
+# BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
 COMMAND_DIR=/src/cmd
 # PKG_DIR=pkg
 # PKG_NAME=$(NAME)-$(VERSION)
@@ -61,12 +61,12 @@ copyfiles:
 
 setupenv: 
 	#source bash-lamda lib and add g to path
-	echo "#gg\n. $(INSTALL_DIR)/$(BASH_LAMBDA_DIR)" >> $(PROFILE)
+	# echo "#gg\n. $(INSTALL_DIR)/$(BASH_LAMBDA_DIR)" >> $(PROFILE)
 	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> $(PROFILE)
 	echo "#gg\n" >> $(PROFILE)
 	chmod +x $(INSTALL_DIR)/$(NAME)
 	# chmod -R +x $(INSTALL_DIR)/$(COMMAND_DIR)
-	echo "WIP install - please restart terminal session"
+	# echo "WIP install - please restart terminal session"
 	#TODO: get rid of lamdba not found error, something not source profile properly
 	# . $(PROFILE)
 	# reset

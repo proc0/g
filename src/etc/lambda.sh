@@ -18,9 +18,53 @@ get_nth(){
     cut -d "$delim" -f "$2" <<<"$1"
 }
 
+# _map :: Eval (String -> b) -> [String] -> [b]
+# note: takes in space delimitted "[String]" pseudo
+_map(){
+    [ -z "$1" ] || 
+    [ -z "$2" ] &&
+    return 1
+
+    local f=$1 a=(`echo "$2"`)
+    local len_a=${#a[@]} idx=0 rv=""
+
+    while [ $idx -lt $len_a ]; do
+        local ret=`$f "${a[$idx]}"`
+        rv="$rv $ret"
+        idx=$((idx+1))
+    done;
+    echo $rv
+}
+
+# _filter :: Eval (String -> Bool) -> [String] -> [String]
+# note: takes in space delimitted "[String]" pseudo
+_filter(){
+    [ -z "$1" ] || 
+    [ -z "$2" ] &&
+    return 1
+
+    local f=$1 a=(`echo "$2"`)
+    local len_a=${#a[@]} idx=0 rv=""
+
+    while [ $idx -lt $len_a ]; do
+        local item=${a[$idx]}
+        local ret=`$f "$item" && echo "$?"`
+
+        [[ $ret -eq 0 ]] && rv="$rv $item"
+        idx=$((idx+1))
+    done;
+    echo $rv
+}
+
+_lt5(){
+    local a=$1
+
+    [ $a -lt 5 ] && return 0 || return 1
+}
 # zip :: String -> String -> String
 _zip(){
-    [ -z "$1" ] || [ -z "$2" ] &&
+    [ -z "$1" ] || 
+    [ -z "$2" ] &&
     return 1
 
     local a1=(`echo "$1"`) b1=(`echo "$2"`) delim=":" rv="" idx=0
@@ -58,4 +102,30 @@ const() {
     local prefix=$1 label=$2
     local i="${prefix}_$label"
     echo "${!i}"
+}
+
+vartype() {
+    local var=$( declare -p $1 )
+    local reg='^declare -n [^=]+=\"([^\"]+)\"$'
+    while [[ $var =~ $reg ]]; do
+            var=$( declare -p ${BASH_REMATCH[1]} )
+    done
+
+    case "${var#declare -}" in
+    a*)
+        echo "ARRAY"
+        ;;
+    A*)
+        echo "HASH"
+        ;;
+    i*)
+        echo "INT"
+        ;;
+    x*)
+        echo "EXPORT"
+        ;;
+    *)
+        echo "OTHER"
+        ;;
+    esac
 }
