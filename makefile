@@ -55,6 +55,7 @@ install: copyfiles setupenv
 uninstall: removefiles cleanenv
 
 copyfiles:
+	# TODO: copy config on install
 	mkdir -p $(INSTALL_DIR)
 	for dir in $(INSTALL_DIRS); do mkdir -p $(INSTALL_DIR)/$$dir; done
 	for file in $(INSTALL_FILES); do cp $$file $(INSTALL_DIR)/$$file; done

@@ -32,7 +32,7 @@ list_branches(){
     local ret=0 \
         #setup
         cur_repo=$1 \
-        branches=`cmd_list` \
+        branches=`cmd_list_branches` \
         br_arr=(`echo $branches`) \
         br_len=${#br_arr[@]} \
         #create new list to enumerate 

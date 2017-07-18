@@ -1,4 +1,9 @@
 cmd_list(){
+    local branch_list="`cmd_list_branches`"
+    echo "${branch_list// /$'\n'}"
+}
+
+cmd_list_branches(){
     local ret=0
     local repo_name=''
     local target=`kvget target`
@@ -14,9 +19,9 @@ cmd_list(){
 
     if [ -n "$repo_name" ]; then
         local branches=`get_branches $repo_name`
-        local branch_list="`_filter 'get_paths' "$branches"`"
-        local display_list="`_map 'format_path' "$branch_list"`"
-        echo $display_list
+        local branch_names="`_filter 'get_branch_names' "$branches"`"
+        local branch_list="`_map 'format_path' "$branch_names"`"
+        echo $branch_list
     else
         ret=14
     fi
@@ -26,14 +31,13 @@ cmd_list(){
 
 get_branches(){
     local repo_name=$1
-
     echo "`git ls-remote --heads $repo_name | awk -F ' ' '{print $2}'`"
 }
 
-get_paths(){
+get_branch_names(){
     local a=$1
     [[ $a == *\/* ]] &&
-    return 0 || return 1
+    return 0 || return 1å
 }
 
 format_path(){

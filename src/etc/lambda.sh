@@ -52,15 +52,10 @@ _filter(){
 
         [[ $ret -eq 0 ]] && rv="$rv $item"
         idx=$((idx+1))
-    done;
+    done
     echo $rv
 }
 
-_lt5(){
-    local a=$1
-
-    [ $a -lt 5 ] && return 0 || return 1
-}
 # zip :: String -> String -> String
 _zip(){
     [ -z "$1" ] || 
@@ -77,7 +72,7 @@ _zip(){
         b2="${b1[$idx]}"
         rv="$rv $a2$delim$b2"
         idx=$((idx+1))
-    done;
+    done
     echo $rv
 }
 
