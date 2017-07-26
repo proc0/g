@@ -12,4 +12,5 @@ cmd_status(){
 #         echo -e "${L_RED}$modded${NONE}"
 #     fi
     git status --branch --untracked --long --porcelain
+    
 }
