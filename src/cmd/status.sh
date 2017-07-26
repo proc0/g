@@ -11,5 +11,6 @@ cmd_status(){
 #         modded=`git ls-files -m`
 #         echo -e "${L_RED}$modded${NONE}"
 #     fi
+#test
     git status --branch --untracked --long --porcelain
 }
