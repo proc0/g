@@ -62,11 +62,13 @@ U           U    unmerged, both modified
 notes
 
 get_status(){
-    echo "`const STS $(get_status_code)`"
+    # echo "`const STS $(get_status_code)`"
+    echo "`const STS $(git status --branch --untracked --long --porcelain)`"
 }
 
 get_status_code(){
     #TODO fix status codes and allow multiple codes
+    #git status --branch --untracked --long --porcelain
     local stat="`git status`"
     local code=GENERIC
 
