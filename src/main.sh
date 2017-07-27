@@ -1,4 +1,4 @@
-#main :: IO ()
+# main :: IO String -> IO ()
 main() {
     local cmd=$1
     [ -n "$cmd" ] || oops NO_COMMAND

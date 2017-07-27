@@ -4,12 +4,13 @@ VERSION=0.01.2
 DIRS=.
 PREFIX?=/usr/local/lib
 PROFILE?=~/.profile
+CONFIGFILE?=g.conf.yml
+TEMP?=~/.tmp
 INSTALL_DIR=$(PREFIX)/$(NAME)
 #gets all files and folders excluding hidden dot files
 INSTALL_DIRS=`find $(DIRS) \( ! -regex '.*/\..*' \) -type d 2>/dev/null`
 INSTALL_FILES=`find $(DIRS) \( ! -regex '.*/\..*' \) -type f 2>/dev/null`
 
-# BASH_LAMBDA_DIR=/lib/bash-lambda/bash-lambda
 COMMAND_DIR=/src/cmd
 # PKG_DIR=pkg
 # PKG_NAME=$(NAME)-$(VERSION)
@@ -55,28 +56,23 @@ install: copyfiles setupenv
 uninstall: removefiles cleanenv
 
 copyfiles:
-	# TODO: copy config on install
 	mkdir -p $(INSTALL_DIR)
+	#copy config on install - TODO make this work
+	#[ ! -f ./$(CONFIGFILE) ] && [ ! -d cfg ] && \
+	#cp ./cfg/$(CONFIGFILE) "$(INSTALL_DIR)/$(CONFIGFILE)"
 	for dir in $(INSTALL_DIRS); do mkdir -p $(INSTALL_DIR)/$$dir; done
 	for file in $(INSTALL_FILES); do cp $$file $(INSTALL_DIR)/$$file; done
 
 setupenv: 
-	#source bash-lamda lib and add g to path
-	# echo "#gg\n. $(INSTALL_DIR)/$(BASH_LAMBDA_DIR)" >> $(PROFILE)
-	echo 'export PATH=$$PATH:$(INSTALL_DIR)' >> $(PROFILE)
-	echo "#gg\n" >> $(PROFILE)
+	echo "#adding g to path" >> $(PROFILE)
+	echo "export PATH=$$PATH:$(INSTALL_DIR)" >> $(PROFILE)
 	chmod +x $(INSTALL_DIR)/$(NAME)
-	# chmod -R +x $(INSTALL_DIR)/$(COMMAND_DIR)
-	# echo "WIP install - please restart terminal session"
-	#TODO: get rid of lamdba not found error, something not source profile properly
-	# . $(PROFILE)
-	# reset
 
 removefiles:
 	rm -rf $(INSTALL_DIR)
 
 cleanenv:
-	sed '/\#gg/,/\#gg/d' $(PROFILE) > temp && mv temp $(PROFILE)
+	sed '/\#adding g to path\n.*$\n/d' $(PROFILE) > $(TEMP) && mv $(TEMP) $(PROFILE)
 
 .PHONY:
-	build test install copyfiles setupconfig uninstall removefiles removeconfig
+	build test install copyfiles setupconfig cleanenv uninstall removefiles removeconfig

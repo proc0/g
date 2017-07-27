@@ -33,7 +33,7 @@ usage="
        [ -l | -b | -m | -u ] <TARGET | BRANCH | REPO/BRANCH>
        [ -c | -k ] <COMMENT | NAME>
 
-    $x  [ COMMAND ] [ -option1 <VALUE1> -option2 <VALUE2>... ]
+    $x  [ EXPANDED COMMAND ] [ -option1 <VALUE1> -option2 <VALUE2>... ]
        [ ls | br | mr | up ] [ -t <TARGET> ]
        [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
        [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
@@ -48,10 +48,10 @@ usage="
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
                             <OPTION TYPE>--DEFAULT          
     ------------------------------------------------------------------------
-    version     v|-v                                    Show version.
-
-
     help        h|-h                                    Show this.
+
+    
+    version     v|-v                                    Show version.
 
 
     stats       s                                       Show current branch
