@@ -5,8 +5,8 @@ PROFILE?=~/.profile
 XHOME=$(PREFIX)/$(NAME)
 XPATH=$(PREFIX)/$(NAME)/$(NAME)
 #get all files and folders excluding hidden dot files
-DIRS=`find $(.) \( ! -regex '.*/\..*' \) -type d 2>/dev/null`
-FILES=`find $(.) \( ! -regex '.*/\..*' \) -type f 2>/dev/null`
+DIRS=`find . \( ! -regex '.*/\..*' \) -type d 2>/dev/null`
+FILES=`find . \( ! -regex '.*/\..*' \) -type f 2>/dev/null`
 
 build: uninstall install
 install: copyfiles setupenv

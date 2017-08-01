@@ -175,7 +175,7 @@ parse_yaml() {
 
 run_cmd() { 
     local cmd=$1 _timeout=$2
-    grep -qP '^\d+$' <<< $_timeout || _timeout=10
+    grep -e '^\d+$' <<< $_timeout || _timeout=10
 
     ( 
         eval "$cmd" &
