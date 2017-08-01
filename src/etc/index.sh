@@ -174,15 +174,15 @@ parse_yaml() {
 }
 
 run_cmd() { 
-    cmd="$1"; timeout="$2";
-    grep -qP '^\d+$' <<< $timeout || timeout=10
+    local cmd=$1 _timeout=$2
+    grep -qP '^\d+$' <<< $_timeout || _timeout=10
 
     ( 
         eval "$cmd" &
         child=$!
         trap -- "" SIGTERM 
         (       
-                sleep $timeout
+                sleep $_timeout
                 kill $child 2> /dev/null 
         ) &     
         wait $child

@@ -6,7 +6,7 @@ main() {
     [ -n "$(get_info $cmd)" ] &&
     get_info "$cmd" | more && exit 0
     #test environment
-    env_ready "$@"
+    run_cmd "env_ready \"`echo $@`\""
     #main event
     local ret=0
     clear_options
