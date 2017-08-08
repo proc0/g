@@ -12,6 +12,6 @@ cmd_status(){
 #         echo -e "${L_RED}$modded${NONE}"
 #     fi
 #test
-    git status --branch --untracked --long --porcelain
-    
+    # git status --branch --untracked --long --porcelain
+    get_status_code
 }

@@ -21,6 +21,22 @@ get_status(){
 }
 
 get_status_code(){
+    set -x
+    local _ifs=$IFS
+    export IFS=$'\n'
+
+    local full_status=(`git status --branch --porcelain`)
+    local header=${full_status[0]}
+
+    [ $ret -gt 0 ] && return $ret
+
+    if [[ "$header" =~ \[*\] ]]; then
+        local status=`echo $header | sed -e 's/.*\[\(.*\)\]/\1/g'`
+        [ -n "$status" ] && echo "$status"
+    fi
+}
+
+_get_status_code(){
     #TODO fix status codes and allow multiple codes
     #git status --branch --untracked --long --porcelain
     local stat="`git status`"
