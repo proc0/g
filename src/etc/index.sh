@@ -1,5 +1,3 @@
-. $SRC_DIR/src/etc/lambda.sh
-
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=0

@@ -1,22 +1,30 @@
 # main :: IO String -> IO ()
 main() {
+    #intro
     local cmd=$1
-    [ -n "$cmd" ] || oops NO_COMMAND
-    #info commands have no dep options
+    [ -n "$cmd" ] || 
+        oops NO_COMMAND
+    #info commands have no deps
     [ -n "$(get_info $cmd)" ] &&
-    get_info "$cmd" | more && exit 0
+        get_info "$cmd" | 
+        more && exit 0
+
     #test environment
     run_cmd "env_ready \"`echo $@`\""
-    #main event
+
+    #main block
     local ret=0
     clear_options
     parse_yml "$CONFIG" 'cfg_' &&
     exec_command "$@" || ret=$?
-    #clean exit if zero
+
+    #outro - exit if no error
     [ $ret -eq 0 ] && exit 0
-    #or err code for human :(
+    #or get error key and ...
     err_key=`const KEY $ret`
-    [ -z "$err_key" ] && err_key=$ret
+    [ -z "$err_key" ] && 
+        err_key=$ret
+    #display error message
     oops "$err_key" "$@"
 }
 #hybrid shortcuts with no 
