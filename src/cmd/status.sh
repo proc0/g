@@ -1,17 +1,16 @@
 cmd_status(){
-    # local ret=0
-#     local status_text=`get_status`
-#     local status_code=`get_status_code`
-#     local target="`get_current_repo`/`get_current_branch`"
-#     local modded=''
+    if [[ "`get_git_version`" -gt 2 ]]; then
+        cmd_status_v2
+    else
+        cmd_status_v1
+    fi
 
-#     echo -e "${GREEN}$target | $status_text
-# ─────────────────────────────────────────────${NONE}"
-#     if [[ "$status_code" == 'MODIFIED' ]]; then
-#         modded=`git ls-files -m`
-#         echo -e "${L_RED}$modded${NONE}"
-#     fi
-#test
-    # git status --branch --untracked --long --porcelain
-    get_status_code
+}
+
+cmd_status_v1(){
+    git status --branch --untracked --long --porcelain
+}
+
+cmd_status_v2(){
+    git status --branch --untracked --long --porcelain=v2
 }

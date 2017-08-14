@@ -17,11 +17,14 @@ clear_options(){
 
 get_status(){
     echo "`const STS $(get_status_code)`"
-    # echo "`const STS $(git status --branch --untracked --long --porcelain)`"
+}
+
+get_git_version(){
+    local version=(`git --version`)
+    echo "${version[2]:0:1}"
 }
 
 get_status_code(){
-    set -x
     local _ifs=$IFS
     export IFS=$'\n'
 
