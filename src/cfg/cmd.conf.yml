@@ -13,3 +13,19 @@ configure:
   - clone: cmd_clone cl
   - config: cmd_config cf
   - diff: cmd_diff df
+
+# list
+# status
+# focus
+# commit
+# branch
+# update
+# pr
+# merge
+
+# install
+# diff
+# clone?
+
+#ui
+#
