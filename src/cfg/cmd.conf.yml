@@ -9,23 +9,19 @@ configure:
   - checkout: cmd_checkout co -k
   - merge: cmd_merge mr -m
   - request: cmd_request pr
-  - install: cmd_install in
-  - clone: cmd_clone cl
   - config: cmd_config cf
-  - diff: cmd_diff df
 
-# list
-# status
-# focus
-# commit
-# branch
-# update
-# pr
-# merge
+# config cf -f
+# new  nw -n
+# ui   ui -u
 
-# install
-# diff
-# clone?
+# list ls -l
+# select sl -s
 
-#ui
-#
+# info in -i
+# commit ci -c
+# branch br -b
+# update up -u
+# request rq -r
+# merge mr -m
+
