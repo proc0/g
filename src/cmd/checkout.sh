@@ -32,12 +32,6 @@ cmd_checkout(){
                 git checkout -b "$name"
                 git push -u "$t_repo" "$name"
             fi
-        else
-            name="${t_branch}_$(date +%s)"
-            t_repo=`get_current_repo`                
-
-            git checkout -b "$name"
-            git push -u "$t_repo" "$name"
         fi
     fi
     cmd_status

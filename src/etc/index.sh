@@ -4,8 +4,8 @@ set_option(){
     local val=$2
     [ -z "$val" ] && ret=14 #no option value!
     # echo "setting option $1 to $val"
-    #replace underscores with spaces
-    kvset "$1" "${val//_/ }"
+    #replace semicolons with spaces
+    kvset "$1" "${val//%/ }"
     return $ret
 }
 # clear_options :: () -> IO()

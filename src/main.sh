@@ -46,20 +46,21 @@ exec_command(){
     [[ "${cmd#*\-}" == "$cmd" ]] &&
     opts="${argv#*$cmd[ ]*}" ||
     opts="${argv#*[^-]*$cmd[ ]*}";
-    #replace spaces with _
-    opts="_${opts// /_}"
-    #then remove _ around opt keys:
+    #replace spaces with a diff char
+    opts="%${opts// /%}"
     local optkeys=${OPTKEYS//:/}
+    #then remove said char surrounding
+    #option key flags
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
         #find option keys used and 
-        #replace _ with spaces
-        if [[ $opts =~ _"$k"_ ]]; then
-            opts=${opts//_"$k"_/ $k }
+        #replace sentinel char with spaces
+        if [[ $opts =~ %"$k"% ]]; then
+            opts=${opts//%"$k"%/ $k }
         fi     
     done
     #set options then run command
-    local options=${opts:1:${#opts}}
+    local options=${opts}
     #note: $opts should not be in ""
     #so that getopts works properly
     set_options $options || ret=$? &&
@@ -78,7 +79,6 @@ set_options() {
         case $key in
             #normal options w/ or w/o args
             k|n) set_option 'name' "$val";;
-            o) set_option 'output' "$val";;
             t) set_option 'target' "$val";;
             #command shortcuts #LBMUC
             #add option/command here & get_command
