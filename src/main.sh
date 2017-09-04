@@ -1,42 +1,42 @@
-# main :: IO String -> IO ()
+# main :: IO String -> IO Int
 main() {
-    #intro
     local cmd=$1
     [ -n "$cmd" ] || 
         oops NO_COMMAND
-    #info commands have no deps
+    # info commands with no deps
     [ -n "$(get_info $cmd)" ] &&
         get_info "$cmd" | 
-        more && exit 0
+            more && exit 0
 
-    #test environment
+    # test environment
     run_cmd "env_ready \"`echo $@`\""
 
-    #main block
+    # main block
     local ret=0
     clear_options
     parse_yml "$CONFIG" 'cfg_' &&
-    exec_command "$@" || ret=$?
+        exec_command "$@" || ret=$?
 
-    #outro - exit if no error
+    # outro - exit if no error
     [ $ret -eq 0 ] && exit 0
-    #or get error key and ...
+    # or get error key and ...
     err_key=`const KEY $ret`
     [ -z "$err_key" ] && 
         err_key=$ret
-    #display error message
+    # display error message
     oops "$err_key" "$@"
 }
-#hybrid shortcuts with no 
-#environment dependencies
-#get_info :: String -> IO ()
+# hybrid shortcuts with no 
+# environment dependencies
+# get_info :: String -> IO ()
 get_info(){
     case "$@" in 
-        h|-h|help) . $MANUAL && echo "$usage";;
+        h|-h|help) . $MANUAL && 
+            echo "$usage";;
         v|-v|version) echo "$VERSION";;
     esac
 }
-#exec_command :: String -> IO Int
+# exec_command :: String -> IO Int
 exec_command(){
     local ret=0 cmd=$1 argv=$@ opts=''
     #split cmd from opts:

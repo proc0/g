@@ -1,27 +1,53 @@
 # command: handler alias -shortcut
 configure:
-  - status: cmd_status s
-  - ui: cmd_ui
+  - new: cmd_new n
+  - ui: cmd_ui ui
+  - config: cmd_config cf
   - list: cmd_list ls -l
   - branch: cmd_branch br -b
+  - status: cmd_status s
   - update: cmd_update up -u
-  - checkin: cmd_checkin ci -c
   - checkout: cmd_checkout co -k
+  - checkin: cmd_checkin ci -c
   - merge: cmd_merge mr -m
   - request: cmd_request pr
-  - config: cmd_config cf
 
-# config cf -f
-# new  nw -n
-# ui   ui -u
+# configure:
+#   - new: cmd_new n
+#   - ui: cmd_ui ui
+#   - init: cmd_init i
+#   - list: cmd_list l
+#   - jump: cmd_jump j
+#   - back: cmd_back k
+#   - status: cmd_status s
+#   - update: cmd_update u
+#   - branch: cmd_branch b
+#   - merge: cmd_merge m
+#   - commit: cmd_commit c
+#   - delete: cmd_delete d
+#   - pullreq: cmd_pullreq p
+#   - checkin: cmd_checkin ci
+#   - checkout: cmd_checkout co
 
-# list ls -l
-# select sl -s
 
-# info in -i
-# commit ci -c
-# branch br -b
-# update up -u
-# request rq -r
-# merge mr -m
+# new n <url>
+
+# ui
+# init i
+
+# list l [<source>]
+# jump j [<source>]
+# back k
+
+# status s
+# update u
+# branch b <target>
+# merge m <source>
+# commit c <comment>
+# delete d <source>
+
+# pullreq p -t <target> -m <title>{body}<body>
+# checkout co -s <source> -t <target>
+# checkin ci -s <source> -c <comment>
+
 
