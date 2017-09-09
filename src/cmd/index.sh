@@ -1,5 +1,5 @@
-. $SRC_DIR/cmd/branch.sh
-. $SRC_DIR/cmd/checkin.sh
+. $SRC_DIR/cmd/jump.sh
+. $SRC_DIR/cmd/commit.sh
 . $SRC_DIR/cmd/checkout.sh
 . $SRC_DIR/cmd/clone.sh
 . $SRC_DIR/cmd/config.sh

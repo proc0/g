@@ -1,4 +1,4 @@
-cmd_checkin(){
+cmd_commit(){
     local ret=0
 
     local msg=`kvget comment`
@@ -6,11 +6,11 @@ cmd_checkin(){
     #no comment value
     [ -z "$msg" ] && ret=14
 
-    if [[ "$status_code" == 'SYNCED' ]]; then
+    if [ -z "$status_code" ]; then
         echo "`const TXT UP_TO_DATE`"
-    elif [[ "$status_code" == 'UNTRACKED' ]]; then
+    elif [[ "$status_code" == 'dettached' ]]; then
         return 99
-    elif [[ "$status_code" == 'AHEAD' ]]; then
+    elif [[ "$status_code" == 'ahead' ]]; then
         git push "`get_current_repo`" "`get_current_branch`"
         cmd_status        
     elif [ -n "$msg" ]; then

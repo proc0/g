@@ -1,20 +1,20 @@
-cmd_branch(){
+cmd_jump(){
     local ret=0 \
         stat_code=`get_status_code`;
 
-    if [[ "$stat_code" == 'MODIFIED' ]]; then
+    if [ -n "$stat_code" ]; then
         echo 'Commit or stash changes first.'
     else
-        local target=`kvget target`
-        if [ -n "$target" ]; then
-            if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
-                local branch=${target#*\/} \
-                    repo=${target%\/*};
+        local _source=`kvget "source"`
+        if [ -n "$_source" ]; then
+            if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+                local branch=${_source#*\/} \
+                    repo=${_source%\/*};
 
                 (git checkout "$branch" || ret=$?) &&
                 (git pull "$repo" "$branch" || ret=$?)
             else
-                local t_branch=$target \
+                local t_branch=$_source \
                     t_repo=`get_current_repo`;
 
                 (git checkout "$t_branch" || ret=$?) &&

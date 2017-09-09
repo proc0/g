@@ -28,40 +28,16 @@ get_status_code(){
 
     local full_status=(`git status --branch --porcelain`)
     local header=${full_status[0]}
+    local hasChanges=${full_status[1]}
 
     [ $ret -gt 0 ] && return $ret
 
     if [[ "$header" =~ \[*\] ]]; then
         local status=`echo $header | sed -e 's/.*\[\(.*\)\]/\1/g'`
         [ -n "$status" ] && echo "$status"
+    elif [ -n "$hasChanges" ]; then
+        echo "modified"
     fi
-}
-
-_get_status_code(){
-    #TODO fix status codes and allow multiple codes
-    #git status --branch --untracked --long --porcelain
-    local stat="`git status`"
-    local code=GENERIC
-
-    local isDetached="`echo $stat | grep 'HEAD detached'`"
-    [ -n "$isDetached" ] && code=DETACHED && echo "$code"
-
-    if [[ $stat =~ .*modified.* ]]; then
-        code=MODIFIED
-    elif [[ $stat =~ .*up\-to\-date.* || $stat =~ .*nothing\ to\ commit.* ]]; then
-        local untracked=`echo $stat | grep 'Untracked\ files'`
-        code=SYNCED
-        [ -n "$untracked" ] && code=UNTRACKED
-    elif [[ $stat =~ .*branch\ is\ behind* ]]; then
-        code=BEHIND
-    elif [[ $stat =~ .*is\ ahead* ]]; then
-        code=AHEAD
-    elif [[ $stat =~ .*Untracked.* ]]; then
-        code=UNTRACKED
-    else
-        code=UNKNOWN
-    fi
-    echo "$code"
 }
 
 get_current_branch(){
@@ -86,7 +62,7 @@ check_env(){
     local ret=0
 
     #exceptions - no environment needed
-    [[ "$1" == 'cl' ]] && return 0
+    [[ "$1" == 'n' ]] && return 0
 
     #check config file
     [ -f "$CONFIG" ] || ret=11 &&
@@ -190,7 +166,7 @@ parse_yaml() {
     }' | sed 's/_=/+=/g'
 }
 
-run_cmd() { 
+safe_run() { 
     local cmd=$1 _timeout=$2
     grep -e '^\d+$' <<< $_timeout || _timeout=10
 

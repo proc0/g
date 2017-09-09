@@ -1,101 +1,55 @@
-# main :: IO String -> IO Int
+# main :: Command -> IO Int
 main() {
-    local cmd=$1
-    [ -n "$cmd" ] || 
-        oops NO_COMMAND
-    # info commands with no deps
-    [ -n "$(get_info $cmd)" ] &&
-        get_info "$cmd" | 
+    local ret=0 cmd=$1 opts="-$@" 
+    [ -n "$cmd" ] || oops NO_CMD
+
+    # info commands with no env
+    [ -n "$(show_info $cmd)" ] &&
+        show_info "$cmd" | 
             more && exit 0
 
     # test environment
-    run_cmd "env_ready \"`echo $@`\""
+    safe_run "env_ready \"`echo $@`\""
 
     # main block
-    local ret=0
     clear_options
     parse_yml "$CONFIG" 'cfg_' &&
-        exec_command "$@" || ret=$?
-
-    # outro - exit if no error
+    parse_options $opts &&
+    parse_command "$cmd" || ret=$?
+    
+    # exit if no error
     [ $ret -eq 0 ] && exit 0
-    # or get error key and ...
+    # or get error key, and
     err_key=`const KEY $ret`
     [ -z "$err_key" ] && 
         err_key=$ret
     # display error message
     oops "$err_key" "$@"
 }
+
+# show_info :: Command -> IO Int
 # hybrid shortcuts with no 
 # environment dependencies
-# get_info :: String -> IO ()
-get_info(){
+show_info(){
     case "$@" in 
         h|-h|help) . $MANUAL && 
             echo "$usage";;
         v|-v|version) echo "$VERSION";;
     esac
 }
-# exec_command :: String -> IO Int
-exec_command(){
-    local ret=0 cmd=$1 argv=$@ opts=''
-    #split cmd from opts:
-    #if removing dash makes no diff
-    #then match command; splice opts
-    #else match cmd-opt; splice opts
-    [[ "${cmd#*\-}" == "$cmd" ]] &&
-    opts="${argv#*$cmd[ ]*}" ||
-    opts="${argv#*[^-]*$cmd[ ]*}";
-    #replace spaces with a diff char
-    opts="%${opts// /%}"
-    local optkeys=${OPTKEYS//:/}
-    #then remove said char surrounding
-    #option key flags
-    for s in $(seq 0 ${#optkeys}); do
-        local k="-${optkeys:s:1}"
-        #find option keys used and 
-        #replace sentinel char with spaces
-        if [[ $opts =~ %"$k"% ]]; then
-            opts=${opts//%"$k"%/ $k }
-        fi     
-    done
-    #set options then run command
-    local options=${opts}
-    #note: $opts should not be in ""
-    #so that getopts works properly
-    set_options $options || ret=$? &&
-    get_command "$cmd" || ret=$?
-    return $ret
-}
-#TODO : abstract options to config file
-#map command options to setters
-#set_option :: $@ -> (()IO -> Int)
-set_options() {
+
+# parse_options :: Options -> IO Int
+parse_options() {
     local OPTIND=0 ret=0
     # echo "parsing options $*"
     while getopts "$OPTKEYS" key; do
-        #get arg value 
-        local val="${OPTARG}"       
-        case $key in
-            #normal options w/ or w/o args
-            k|n) set_option 'name' "$val";;
-            t) set_option 'target' "$val";;
-            #command shortcuts #LBMUC
-            #add option/command here & get_command
-            l|b|m|u|c|t|?)
-            #set shortcut option values
-            case "$key" in
-                c) set_option 'comment' "$val";;
-                #getopts sets key to : if val=null
-                b|*) [[ $key == ':' && $val != 'b' ]] &&
-                   val="`get_current_repo`/`get_current_branch`"
-                   #do not set default target
-                   #for -b with no user value
-                   [[ $val == 'b' ]] ||
-                   set_option 'target' "$val";;
-            esac;;
-        esac
-        #keep track of err code
+        local val="${OPTARG}"
+        # to avoid ret=1 ...
+        # check for true cond
+        # instead of -n $val      
+        [ -z "$val" ] || 
+        set_option "$key" "$val"
+        # keep track of fun code
         local _ret=$?
         [ $_ret -gt $ret ] &&
         ret=$_ret
@@ -103,35 +57,50 @@ set_options() {
     shift "$((OPTIND-1))"
     return $ret
 }
-#map commands to handlers
-#get_command :: 
-get_command(){
+
+# parse_command :: Command -> IO Int
+parse_command(){
     local ret=0 cmd=$1 cmd_len=0
-    #get command properties list
+    # get command list
     parse_yml "$CMD_CONFIG" 'cmd_'
-    cmd_len=${#cmd_configure[@]}
-    # iterate commands, and access its properties
+    cmd_len=${#cmd_settings[@]}
+    # iterate and configure commands
     while [ $cmd_len -gt 0 -o $cmd_len -eq 0 ]; do
         local idx=$((cmd_len-1))
         if [ $idx -gt 0 -o $idx -eq 0 ]; then
             # parse command properties
-            local pair=${cmd_configure[$idx]}
+            local pair=${cmd_settings[$idx]}
             local cmd_name=$(fst "$pair")
             local cmd_props=($(snd "$pair"))
-            local cmd_handler=${cmd_props[0]} \
-                cmd_alias=${cmd_props[1]} \
-                cmd_shortcut=${cmd_props[2]};
-            #match name, alias, or shortcut flag
-            if [[ "$cmd" == "$cmd_shortcut" ||
-                  "$cmd" == "$cmd_alias" ||
-                  "$cmd" == "$cmd_name" ]]; then
-                #execute command
-                $cmd_handler || ret=$?
+            local cmd_subr=${cmd_props[0]} \
+                  cmd_alias=${cmd_props[1]} \
+                  cmd_argval=${cmd_props[2]} \
+                  cmd_arg2key=${cmd_props[3]} \
+                  cmd_arg2val=${cmd_props[4]};
+
+            # match name or alias
+            if [[ "$cmd" == "$cmd_alias" ||
+                  "$cmd" == "$cmd_name" ]]; then                  
+                # transfer option values
+                if [[ "$cmd_argval" != "" ]]; then
+                    # primary option value
+                    if [ ! -z "$cmd_alias" -a ! -z "$cmd_argval" ]; then
+                        local cmd_opt1=`kvget "$cmd_alias"`
+                        kvset "$cmd_argval" "$cmd_opt1"
+                    fi
+                    # secondary option value
+                    if [ ! -z "$cmd_arg2key" ]; then
+                        local cmd_opt2=`kvget "$cmd_arg2key"`
+                        kvset "$cmd_arg2val" "$cmd_opt2"
+                    fi
+                fi
+                # execute command
+                $cmd_subr || ret=$?
             fi
         fi
-        #countdown
+        # countdown
         cmd_len=$idx
-        #keep track of err code
+        # fun code
         local _ret=$?
         [ $_ret -gt $ret ] &&
         ret=$_ret
