@@ -1,4 +1,4 @@
-cmd_clone(){
+cmd_new(){
     # _repo=`kvget repo`
     # _repo_url=`kvget repo_url`
     # _dest=`kvget dest`
@@ -22,4 +22,14 @@ cmd_clone(){
     # --branch
     # for repo_name in `kvget remotes`
     #    git remote add
+}
+
+cmd_install(){ 
+    git init
+    git remote add origin "`kvget target`"
+    git config branch.master.remote origin
+    git config branch.master.merge refs/heads/master
+    touch .gitignore
+    kvset comment "Initial commit."
+    cmd_checkin
 }

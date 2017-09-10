@@ -1,4 +1,4 @@
-cmd_request(){
+cmd_prequest(){
     local ret=0
     local msg=`kvget comment`
     local target=`kvget target`
