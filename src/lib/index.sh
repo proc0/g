@@ -57,8 +57,8 @@ get_current_repo(){
     echo "$repo_name"
 }
 #check command hard dependencies
-#check_env :: IO() -> ERROR_LABEL
-check_env(){
+#envtest :: IO() -> ERROR_LABEL
+envtest(){
     local ret=0
 
     #exceptions - no environment needed

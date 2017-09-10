@@ -2,21 +2,20 @@
 main() {
     local ret=0 cmd=$1 opts="-$@" 
     [ -n "$cmd" ] || oops NO_CMD
-
-    # info commands with no env
+    
+    # gitless commands
     [ -n "$(show_info $cmd)" ] &&
         show_info "$cmd" | 
             more && exit 0
 
-    # test environment
-    safe_run "env_ready \"`echo $@`\""
-
-    # main block
+    # check runtime dependencies
+    safe_run "envtest \"`echo $@`\""
+    # 
     clear_options
     parse_yml "$CONFIG" 'cfg_' &&
     parse_options $opts &&
     parse_command "$cmd" || ret=$?
-    
+
     # exit if no error
     [ $ret -eq 0 ] && exit 0
     # or get error key, and
@@ -28,8 +27,6 @@ main() {
 }
 
 # show_info :: Command -> IO Int
-# hybrid shortcuts with no 
-# environment dependencies
 show_info(){
     case "$@" in 
         h|-h|help) . $MANUAL && 
@@ -84,7 +81,8 @@ parse_command(){
                 # transfer option values
                 if [[ "$cmd_argval" != "" ]]; then
                     # primary option value
-                    if [ ! -z "$cmd_alias" -a ! -z "$cmd_argval" ]; then
+                    if [ ! -z "$cmd_alias" -a \
+                         ! -z "$cmd_argval" ]; then
                         local cmd_opt1=`kvget "$cmd_alias"`
                         kvset "$cmd_argval" "$cmd_opt1"
                     fi
