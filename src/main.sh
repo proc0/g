@@ -72,11 +72,11 @@ parse_command(){
             local pair=${cmd_settings[$idx]}
             local cmd_name=$(fst "$pair")
             local cmd_props=($(snd "$pair"))
-            local cmd_subr=${cmd_props[0]} \
-                  cmd_alias=${cmd_props[1]} \
-                  cmd_argval=${cmd_props[2]} \
-                  cmd_arg2key=${cmd_props[3]} \
-                  cmd_arg2val=${cmd_props[4]};
+            local cmd_subr="cmd_$cmd_name" \
+                  cmd_alias=${cmd_props[0]} \
+                  cmd_argval=${cmd_props[1]} \
+                  cmd_arg2key=${cmd_props[2]} \
+                  cmd_arg2val=${cmd_props[3]};
 
             # match name or alias
             if [[ "$cmd" == "$cmd_alias" ||

@@ -1,21 +1,21 @@
-# command: handler alias option1_name option2_key option2_name
+# command: alias/opt1key opt1val opt2key opt2val
 settings:
-  - ui:       cmd_ui
-  - init:     cmd_init    i
-  - new:      cmd_new     n     repo_url
-  - list:     cmd_list    l     source
-  - jump:     cmd_jump    j     source
-  - back:     cmd_back    k 
-  - status:   cmd_status  s
-  - update:   cmd_update  u
-  - branch:   cmd_branch  b     target
-  - merge:    cmd_merge   m     source
-  - delete:   cmd_delete  d     source
-  - commit:   cmd_commit  c     comment
-  - checkout: cmd_checkout o    source    t target
-  - prequest: cmd_prequest p    target    c comment
+  - ui:       ui       
+  - init:     i
+  - new:      n   repo_url
+  - list:     l   source
+  - jump:     j   source
+  - back:     k 
+  - status:   s
+  - update:   u
+  - branch:   b   target
+  - merge:    m   source
+  - delete:   d   source
+  - commit:   c   comment
+  - checkout: o   source  t   target
+  - prequest: p   target  c   comment
 
-# new n <url>
+# new <url>
 
 # ui
 # init i
