@@ -13,7 +13,7 @@ main() {
     # 
     clear_options
     parse_yml "$CONFIG" 'cfg_' &&
-    parse_options $opts &&
+    parse_options `escape_opts "$opts"` &&
     parse_command "$cmd" || ret=$?
 
     # exit if no error
@@ -35,7 +35,7 @@ show_info(){
     esac
 }
 
-# parse_options :: Options -> IO Int
+# parse_options :: SafeOptions -> IO Int
 parse_options() {
     local OPTIND=0 ret=0
     # echo "parsing options $*"

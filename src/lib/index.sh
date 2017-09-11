@@ -1,13 +1,35 @@
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=0
+    local key=$1
     local val=$2
-    [ -z "$val" ] && ret=14 #no option value!
+    # no option value
+    [ -z "$val" ] && ret=14 
     # echo "setting option $1 to $val"
-    #replace semicolons with spaces
-    kvset "$1" "${val//%/ }"
+    # replace () with spaces
+    kvset "$key" "${val//\(\)/ }"
     return $ret
 }
+
+# escape_opts :: Options -> SafeOptions
+# escape_opts ::: removes spaces from options
+escape_opts(){
+    local argv=$1
+    # replace spaces with ()
+    opts="()${argv// /\(\)}"
+    # then remove _ around opt keys:
+    local optkeys=${OPTKEYS//:/}
+    for s in $(seq 0 ${#optkeys}); do
+        local k="-${optkeys:s:1}"
+        # find option keys used and 
+        # replace () with spaces
+        if [[ $opts =~ ()"$k"() ]]; then
+            opts=${opts//\(\)"$k"\(\)/ $k }
+        fi     
+    done
+    echo "$opts"
+}
+
 # clear_options :: () -> IO()
 clear_options(){
     kvclear

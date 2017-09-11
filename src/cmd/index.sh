@@ -3,6 +3,7 @@
 . $SRC_DIR/cmd/new.sh
 . $SRC_DIR/cmd/list.sh
 . $SRC_DIR/cmd/jump.sh
+. $SRC_DIR/cmd/back.sh
 . $SRC_DIR/cmd/status.sh
 . $SRC_DIR/cmd/update.sh
 . $SRC_DIR/cmd/branch.sh
