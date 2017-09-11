@@ -7,7 +7,7 @@ cmd_jump(){
     else
         local _source=`kvget "source"`
         if [ -n "$_source" ]; then
-            kvset "prev_source" $_source
+            kvset "prev_source" "`get_current_repo`/`get_current_branch`"
 
             if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
                 local branch=${_source#*\/} \
@@ -68,8 +68,8 @@ list_branches(){
             select_branch=${select_entry[1]};
         # checkout and try to update branch
         if [ -n "$select_branch" ]; then
+            kvset "prev_source" "`get_current_repo`/`get_current_branch`"
             kvset "source" $_source
-            kvset "prev_source" $_source
             git checkout "$select_branch"
             cmd_update
         else
