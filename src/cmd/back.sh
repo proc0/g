@@ -1,7 +1,6 @@
 cmd_back(){
-	local prev_branch=`kvget prev_source` ret=0
-
-	[ -n "$prev_branch" ] && echo $prev_branch
-	
-	return $ret
+	local prev_branch=`kvget prev_source`
+	[ -n "$prev_branch" ] && kvset 'source' "$prev_source"
+	cmd_jump
+	return $?
 }
