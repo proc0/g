@@ -76,6 +76,7 @@ cmd_prequest(){
 
     # parse JSON to get PR url
     if [ -n "$response" ]; then
+        echo -ne "Server response:\n$response"
         # TODO: parse JSON without dependencies
         local self_url=`echo "$response" | python -c "import json,sys;obj=json.load(sys.stdin);print obj['_links']['self']['href'];"`
         
