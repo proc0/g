@@ -1,44 +1,10 @@
 cmd_merge(){
-    local ret=0
-    #TODO: check if conflicts, offer user to revert
-    # cmd_revert="git revert -m 1 [sha_of_C9]"
-    local cur_repo=`get_current_repo`
-    local cur_branch=`get_current_branch`
-    local target="$cur_repo/$cur_branch"
-
-    cmd_update
-    [ -n "$target" ] && git merge "$target" || ret=$?
-    [ $ret -gt 0 ] && return $ret
-    cmd_status
+    local target=`kvget target`
+    if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then 
+        #TODO: check if conflicts, offer user to revert
+        # cmd_revert="git revert -m 1 [sha_of_C9]"
+        git merge "$target"
+        cmd_status
+    fi
     return $?
-}
-
-cmd_update(){
-    local ret=0
-    local repo_len=${#cfg_remotes[@]}
-    #update cfg_remotes if cfg_remotes exists
-    while [ $repo_len -gt 0 -o $repo_len -eq 0 ]; do
-        local idx=$((repo_len-1))
-        if [ $idx -gt 0 -o $idx -eq 0 ]; then
-            local pair=${cfg_remotes[$idx]}
-            #split pair into 1st and 2nd field w/ cut
-            #note: 2nd field may contain delim (in url)
-            #local url=$(echo `cut -d ':' -f 2,3,4 <<< $pair`)
-            local repo=$(echo `cut -d ':' -f 1 <<< $pair`)
-            check_remote "$repo"
-            #check return code to
-            #prevent it from propagating
-            if [ $? -eq 0 ]; then
-                echo -e "updating $repo ..."
-                git fetch "$repo" || ret=$?
-            fi
-        fi
-        #countdown
-        repo_len=$idx
-    done
-    local _ret=$?
-    [[ "$_ret" -gt 0 ]] && return $_ret
-    [[ "$ret" -gt 0 ]] && return $ret
-    cmd_status
-    return 0
 }

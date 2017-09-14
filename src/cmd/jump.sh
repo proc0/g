@@ -1,33 +1,33 @@
 cmd_jump(){
-    local ret=0 \
-        stat_code=`get_status_code`;
+    local stat_code=`get_status_code`
 
     if [ -n "$stat_code" ]; then
-        echo 'Commit or stash changes first.'
-    else
+        echo "Warning: branch has uncommitted changes.\nTransfer the changes to another branch? Y/n"
+        read transfer
+    fi
+
+    if [ -z "$transfer" ]; then
         local _source=`kvget "source"`
+        
         if [ -n "$_source" ]; then
             kvset "prev_source" "`get_current_repo`/`get_current_branch`"
 
             if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
-                local branch=${_source#*\/} \
-                    repo=${_source%\/*};
+                local branch=${_source#*\/} repo=${_source%\/*}
 
-                (git checkout "$branch" || ret=$?) &&
-                (git pull "$repo" "$branch" || ret=$?)
+                git checkout "$branch" &&
+                cmd_update
             else
-                local t_branch=$_source \
-                    t_repo=`get_current_repo`;
-
-                (git checkout "$t_branch" || ret=$?) &&
-                (git pull "$t_repo" "$t_branch" || ret=$?)
+                echo -ne "`const TXT FETCHING_BRANCH`" &&
+                list_branches "$_source"
             fi           
         else
             echo -ne "`const TXT FETCHING_BRANCH`" &&
-            list_branches "`get_current_repo`" || ret=$?
+            list_branches "`get_current_repo`"
         fi
     fi
-    return $ret
+    
+    return $?
 }
 
 list_branches(){
