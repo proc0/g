@@ -7,21 +7,26 @@ cmd_jump(){
         local _source=`kvget "source"`
         
         if [ -n "$_source" ]; then
-            kvset "prev_source" "`get_current_repo`/`get_current_branch`"
-
             if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
                 local branch=${_source#*\/} repo=${_source%\/*}
-
-                git checkout "$branch" &&
-                cmd_update
+                git checkout "$branch"
             else
-                echo -ne "`const TXT FETCHING_BRANCH`" &&
-                list_branches "$_source"
+                local repo_exists="`find_repo "$_source"`"
+                # if there's a repo match, list branches
+                if [ $? -eq 0 ]; then
+                    echo -ne "`const TXT FETCHING_BRANCH`" &&
+                    list_branches "$_source"
+                else
+                    # source must be a branch
+                    git checkout "$_source"
+                fi
             fi           
+            cmd_update
         else
             echo -ne "`const TXT FETCHING_BRANCH`" &&
             list_branches "`get_current_repo`"
         fi
+        kvset "prev_source" "`get_current_repo`/`get_current_branch`"
     fi
     
     return $?
@@ -76,4 +81,33 @@ list_branches(){
     # reset IFS?
     unset IFS
     return $ret
+}
+
+find_repo(){
+    local ret=0
+    local repo_len=${#cfg_remotes[@]}
+    local found=1
+    local match=''
+    #update cfg_remotes if cfg_remotes exists
+    while [ $repo_len -gt 0 -o $repo_len -eq 0 ]; do
+        local idx=$((repo_len-1))
+        if [ $idx -gt 0 -o $idx -eq 0 -o $found -eq 0 ]; then
+            local pair=${cfg_remotes[$idx]}
+            #split pair into 1st and 2nd field w/ cut
+            #note: 2nd field may contain delim (in url)
+            #local url=$(echo `cut -d ':' -f 2,3,4 <<< $pair`)
+            local repo=$(echo `cut -d ':' -f 1 <<< $pair`)
+            local remote_exists=`check_remote "$repo"`
+            #check return code to
+            #prevent it from propagating
+            if [[ $remote_exists == 0 ]]; then
+                found=0
+                match="$repo"
+            fi
+        fi
+        #countdown
+        repo_len=$idx
+    done
+
+    echo "$match"
 }

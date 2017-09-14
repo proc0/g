@@ -40,7 +40,7 @@ parse_options() {
     local OPTIND=0 ret=0
     # echo "parsing options $*"
     while getopts "$OPTKEYS" key; do
-        local val="${OPTARG}"
+        local val=${OPTARG}
         # to avoid ret=1 ...
         # check for true cond
         # instead of -n $val      
@@ -71,25 +71,25 @@ parse_command(){
             local cmd_props=($(snd "$pair"))
             local cmd_subr="cmd_$cmd_name" \
                   cmd_alias=${cmd_props[0]} \
-                  cmd_argval=${cmd_props[1]} \
-                  cmd_arg2key=${cmd_props[2]} \
-                  cmd_arg2val=${cmd_props[3]};
+                  cmd_arg1key=${cmd_props[1]} \
+                  cmd_arg2flag=${cmd_props[2]} \
+                  cmd_arg2key=${cmd_props[3]};
 
             # match name or alias
             if [[ "$cmd" == "$cmd_alias" ||
                   "$cmd" == "$cmd_name" ]]; then                  
                 # transfer option values
-                if [[ "$cmd_argval" != "" ]]; then
+                if [ -n "$cmd_arg1key" ]; then
                     # primary option value
-                    if [ ! -z "$cmd_alias" -a \
-                         ! -z "$cmd_argval" ]; then
-                        local cmd_opt1=`kvget "$cmd_alias"`
-                        kvset "$cmd_argval" "$cmd_opt1"
+                    if [ -n "$cmd_alias" -a \
+                         -n "$cmd_arg1key" ]; then
+                        local cmd_arg1val=`kvget "$cmd_alias"`
+                        kvset "$cmd_arg1key" "$cmd_arg1val"
                     fi
                     # secondary option value
-                    if [ ! -z "$cmd_arg2key" ]; then
-                        local cmd_opt2=`kvget "$cmd_arg2key"`
-                        kvset "$cmd_arg2val" "$cmd_opt2"
+                    if [ -n "$cmd_arg2flag" ]; then
+                        local cmd_arg2val=`kvget "$cmd_arg2flag"`
+                        kvset "$cmd_arg2key" "$cmd_arg2val"
                     fi
                 fi
                 # execute command

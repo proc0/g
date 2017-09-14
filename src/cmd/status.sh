@@ -1,5 +1,5 @@
 cmd_status(){
-    if [[ 2 -gt `get_git_version` ]]; then
+    if [[ 3 -gt `get_git_version` ]]; then
         cmd_status_v1
     else
         cmd_status_v2

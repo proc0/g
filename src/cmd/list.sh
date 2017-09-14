@@ -7,12 +7,16 @@ cmd_list_branches(){
     local ret=0
     local repo_name=''
     local _source=`kvget "source"`
+    local _source2="$1"
+
     if [ -n "$_source" ]; then
         if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
             repo_name=${_source%\/*}
         else
             repo_name=$_source
-        fi           
+        fi
+    elif [ -n "$_source2" ]; then
+        repo_name="$_source2"           
     else
         repo_name=`get_current_repo`
     fi

@@ -16,17 +16,18 @@ set_option(){
 escape_opts(){
     local argv=$1
     # replace spaces with ()
-    opts="()${argv// /\(\)}"
+    opts="()${argv// /()}"
     # then remove _ around opt keys:
     local optkeys=${OPTKEYS//:/}
     for s in $(seq 0 ${#optkeys}); do
         local k="-${optkeys:s:1}"
         # find option keys used and 
         # replace () with spaces
-        if [[ $opts =~ ()"$k"() ]]; then
+        if [[ $opts =~ \(\)"$k"\(\) ]]; then
             opts=${opts//\(\)"$k"\(\)/ $k }
         fi     
     done
+    # add dash for getopts
     echo "$opts"
 }
 
@@ -130,7 +131,7 @@ lift_IFS(){
 rem_cache=""
 check_remote(){
     local rem_list
-    local rem_name=$1
+    local rem_name="$1"
     #cach git remote show to avoid multiple calls
     [ -n "$rem_cache" ] && rem_list=$rem_cache \
     || rem_cache=`get_remotes` && rem_list=(`echo "$rem_cache"`)
@@ -141,7 +142,7 @@ check_remote(){
     while [ $rem_len -gt 0 -a $exists -eq 1 ]; do
         local idx=$((rem_len-1))
         if [ $idx -gt 0 -o $idx -eq 0 ]; then 
-            local rem_i=${rem_list[$idx]}
+            local rem_i="${rem_list[$idx]}"
             if [[ "$rem_name" == "$rem_i" ]]; then
                 exists=0 #0 is TRUE
             fi
