@@ -1,4 +1,4 @@
-access_token: ACCESS_TOKEN
+access_token: 1cb3cde03ba6344cc1c5f029d39950cd5483ad5d
 targets:
   default: origin/master
 remotes:

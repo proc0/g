@@ -7,7 +7,20 @@ cmd_prequest(){
     local branch=`get_current_branch`
     local domain=`get_remote_base_url`
 
-    local post_url="$domain/api/v3/repos/$repo/pulls";
+    local domain_url post_url
+    if [[ $domain =~ github ]]; then
+        domain_url="${domain%github*}api.github${domain#*github}"
+    else
+        domain_url="$domain"
+    fi
+
+    if [[ $domain_url =~ github ]]; then
+        post_url="$domain_url/repos/$repo/pulls"
+    else
+        post_url="$domain_url/api/v3/repos/$repo/pulls"
+    fi
+
+    [ -z "$post_url" ] && return 31
 
     local base=''
     #TODO: cross repo pull requests
@@ -65,12 +78,17 @@ cmd_prequest(){
     if [ -n "$response" ]; then
         #TODO: parse JSON without dependencies
         local self_url=`echo "$response" | python -c "import json,sys;obj=json.load(sys.stdin);print obj['_links']['self']['href'];"`
-        local pr_num=`echo ${self_url##*/} | sed -e 's/\([0-9]+\)/\1/'`
-        #github url for this pr
-        local pr_url="$domain/$repo/pull/$pr_num"
         
-        echo "$pr_url"
-        open -a "/Applications/Google Chrome.app" "$pr_url" || ret=$?
+        if [ -n "$self_url" ]; then
+            local pr_num=`echo ${self_url##*/} | sed -e 's/\([0-9]+\)/\1/'`
+            #github url for this pr
+            local pr_url="$domain/$repo/pull/$pr_num"
+            
+            echo "$pr_url"
+            open -a "/Applications/Google Chrome.app" "$pr_url" || ret=$?
+        else
+            ret=31
+        fi
     fi
 
     return $ret
@@ -90,8 +108,8 @@ get_remote_base_url(){
 }
 
 get_remote_url(){
-    local repo_label=`get_current_repo` \ 
-        repo_url=`git config --get remote.$repo_label.url`;
+    local repo_label=`get_current_repo`
+    local repo_url=`git config --get remote.$repo_label.url`
     echo "$repo_url" 
 }
 
