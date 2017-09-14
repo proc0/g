@@ -1,16 +1,16 @@
 cmd_status(){
-    if [[ "`get_git_version`" -gt 2 ]]; then
-        cmd_status_v2
-    else
+    if [[ 2 -gt `get_git_version` ]]; then
         cmd_status_v1
+    else
+        cmd_status_v2
     fi
 
 }
 
 cmd_status_v1(){
-    git status --branch --untracked --long --porcelain
+    git status --branch --untracked --porcelain
 }
 
 cmd_status_v2(){
-    git status --branch --untracked --long --porcelain=v2
+    git status --branch --untracked --porcelain=v2 -s
 }

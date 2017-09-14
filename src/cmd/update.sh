@@ -1,4 +1,17 @@
 cmd_update(){
+    local cur_repo=`get_current_repo`
+    local cur_branch=`get_current_branch`
+    local target="$cur_repo/$cur_branch"
+
+    [ -n "$target" ] && 
+    kvset target "$target"
+
+    git fetch "$cur_repo" &&
+    cmd_merge
+    return $?
+}
+
+cmd_update_all(){
     local ret=0
     local repo_len=${#cfg_remotes[@]}
     #update cfg_remotes if cfg_remotes exists

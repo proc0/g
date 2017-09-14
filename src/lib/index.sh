@@ -1,16 +1,41 @@
 # set_option :: Key -> Value -> ErrorCode -> IO()
 set_option(){
     local ret=0
+    local key=$1
     local val=$2
-    [ -z "$val" ] && ret=14 #no option value!
+    # no option value
+    [ -z "$val" ] && ret=14 
     # echo "setting option $1 to $val"
-    #replace underscores with spaces
-    kvset "$1" "${val//_/ }"
+    # replace () with spaces
+    kvset "$key" "${val//\(\)/ }"
     return $ret
 }
+
+# escape_opts :: Options -> SafeOptions
+# escape_opts ::: removes spaces from options
+escape_opts(){
+    local argv=$1
+    # replace spaces with ()
+    opts="()${argv// /\(\)}"
+    # then remove _ around opt keys:
+    local optkeys=${OPTKEYS//:/}
+    for s in $(seq 0 ${#optkeys}); do
+        local k="-${optkeys:s:1}"
+        # find option keys used and 
+        # replace () with spaces
+        if [[ $opts =~ ()"$k"() ]]; then
+            opts=${opts//\(\)"$k"\(\)/ $k }
+        fi     
+    done
+    echo "$opts"
+}
+
 # clear_options :: () -> IO()
 clear_options(){
+    # TODO: abstract option exceptions that don't clear
+    local prev_branch=`kvget prev_source`
     kvclear
+    kvset prev_source "$prev_branch"
 }
 
 get_status(){
@@ -28,40 +53,16 @@ get_status_code(){
 
     local full_status=(`git status --branch --porcelain`)
     local header=${full_status[0]}
+    local hasChanges=${full_status[1]}
 
     [ $ret -gt 0 ] && return $ret
 
     if [[ "$header" =~ \[*\] ]]; then
         local status=`echo $header | sed -e 's/.*\[\(.*\)\]/\1/g'`
         [ -n "$status" ] && echo "$status"
+    elif [ -n "$hasChanges" ]; then
+        echo "modified"
     fi
-}
-
-_get_status_code(){
-    #TODO fix status codes and allow multiple codes
-    #git status --branch --untracked --long --porcelain
-    local stat="`git status`"
-    local code=GENERIC
-
-    local isDetached="`echo $stat | grep 'HEAD detached'`"
-    [ -n "$isDetached" ] && code=DETACHED && echo "$code"
-
-    if [[ $stat =~ .*modified.* ]]; then
-        code=MODIFIED
-    elif [[ $stat =~ .*up\-to\-date.* || $stat =~ .*nothing\ to\ commit.* ]]; then
-        local untracked=`echo $stat | grep 'Untracked\ files'`
-        code=SYNCED
-        [ -n "$untracked" ] && code=UNTRACKED
-    elif [[ $stat =~ .*branch\ is\ behind* ]]; then
-        code=BEHIND
-    elif [[ $stat =~ .*is\ ahead* ]]; then
-        code=AHEAD
-    elif [[ $stat =~ .*Untracked.* ]]; then
-        code=UNTRACKED
-    else
-        code=UNKNOWN
-    fi
-    echo "$code"
 }
 
 get_current_branch(){
@@ -81,12 +82,12 @@ get_current_repo(){
     echo "$repo_name"
 }
 #check command hard dependencies
-#check_env :: IO() -> ERROR_LABEL
-check_env(){
+#envtest :: IO() -> ERROR_LABEL
+envtest(){
     local ret=0
 
     #exceptions - no environment needed
-    [[ "$1" == 'cl' ]] && return 0
+    [[ "$1" == 'n' ]] && return 0
 
     #check config file
     [ -f "$CONFIG" ] || ret=11 &&
@@ -190,7 +191,7 @@ parse_yaml() {
     }' | sed 's/_=/+=/g'
 }
 
-run_cmd() { 
+safe_run() { 
     local cmd=$1 _timeout=$2
     grep -e '^\d+$' <<< $_timeout || _timeout=10
 

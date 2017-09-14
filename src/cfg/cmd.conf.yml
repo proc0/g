@@ -1,53 +1,16 @@
-# command: handler alias -shortcut
-configure:
-  - new: cmd_new n
-  - ui: cmd_ui ui
-  - config: cmd_config cf
-  - list: cmd_list ls -l
-  - branch: cmd_branch br -b
-  - status: cmd_status s
-  - update: cmd_update up -u
-  - checkout: cmd_checkout co -k
-  - checkin: cmd_checkin ci -c
-  - merge: cmd_merge mr -m
-  - request: cmd_request pr
-
-# configure:
-#   - new: cmd_new n
-#   - ui: cmd_ui ui
-#   - init: cmd_init i
-#   - list: cmd_list l
-#   - jump: cmd_jump j
-#   - back: cmd_back k
-#   - status: cmd_status s
-#   - update: cmd_update u
-#   - branch: cmd_branch b
-#   - merge: cmd_merge m
-#   - commit: cmd_commit c
-#   - delete: cmd_delete d
-#   - pullreq: cmd_pullreq p
-#   - checkin: cmd_checkin ci
-#   - checkout: cmd_checkout co
-
-
-# new n <url>
-
-# ui
-# init i
-
-# list l [<source>]
-# jump j [<source>]
-# back k
-
-# status s
-# update u
-# branch b <target>
-# merge m <source>
-# commit c <comment>
-# delete d <source>
-
-# pullreq p -t <target> -m <title>{body}<body>
-# checkout co -s <source> -t <target>
-# checkin ci -s <source> -c <comment>
-
-
+# command: alias/opt1key opt1val opt2key opt2val
+settings:
+  - ui:       ui       
+  - init:     i
+  - new:      n   repo_url
+  - list:     l   source
+  - jump:     j   source
+  - back:     k 
+  - status:   s
+  - update:   u
+  - branch:   b   target
+  - merge:    m   source
+  - delete:   d   source
+  - commit:   c   comment
+  - checkout: o   source  t   target
+  - prequest: p   target  c   comment
