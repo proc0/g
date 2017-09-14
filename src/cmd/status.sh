@@ -8,9 +8,9 @@ cmd_status(){
 }
 
 cmd_status_v1(){
-    git status --branch --untracked --long --porcelain
+    git status --branch --untracked --porcelain
 }
 
 cmd_status_v2(){
-    git status --branch --untracked --long --porcelain=v2
+    git status --branch --untracked --porcelain=v2 -s
 }
