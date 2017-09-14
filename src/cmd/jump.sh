@@ -2,11 +2,8 @@ cmd_jump(){
     local stat_code=`get_status_code`
 
     if [ -n "$stat_code" ]; then
-        echo "Warning: branch has uncommitted changes.\nTransfer the changes to another branch? Y/n"
-        read transfer
-    fi
-
-    if [ -z "$transfer" ]; then
+        echo -ne "Error: branch not in sync.\nCommit, branch, or discard changes.\n"
+    else
         local _source=`kvget "source"`
         
         if [ -n "$_source" ]; then
@@ -69,7 +66,7 @@ list_branches(){
         # checkout and try to update branch
         if [ -n "$select_branch" ]; then
             kvset "prev_source" "`get_current_repo`/`get_current_branch`"
-            kvset "source" $_source
+            kvset "source" "$_source"
             git checkout "$select_branch"
             cmd_update
         else

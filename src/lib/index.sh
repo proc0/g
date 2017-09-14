@@ -32,7 +32,10 @@ escape_opts(){
 
 # clear_options :: () -> IO()
 clear_options(){
+    # TODO: abstract option exceptions that don't clear
+    local prev_branch=`kvget prev_source`
     kvclear
+    kvset prev_source "$prev_branch"
 }
 
 get_status(){

@@ -11,7 +11,7 @@ main() {
     # check runtime dependencies
     safe_run "envtest \"`echo $@`\""
     # 
-    # clear_options
+    clear_options
     parse_yml "$CONFIG" 'cfg_' &&
     parse_options `escape_opts "$opts"` &&
     parse_command "$cmd" || ret=$?
