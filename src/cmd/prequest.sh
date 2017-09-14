@@ -23,7 +23,7 @@ cmd_prequest(){
     [ -z "$post_url" ] && return 31
 
     local base=''
-    #TODO: cross repo pull requests
+    # TODO: cross repo pull requests
     if [ -n "$target" ]; then 
         if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
             t_branch=${target#*/}
@@ -35,20 +35,20 @@ cmd_prequest(){
         base=$t_branch
     fi
 
-    #break up message into title and body
+    # break up message into title and body
     local msg_title='' msg_body=''
     [[ "$msg" =~ \{body\} ]] &&
     msg_title="${msg%\{body\}*}" &&
     msg_body="${msg#*\{body\}}"
     
-    #check arguments
+    # check arguments
     ([ -z "$branch" -o \
        -z "$base" -o \
        -z "$msg_title" -o \
        -z "$msg_body" ]) &&
     [[ $post_url =~ https:\/\/ ]] &&
     [[ $post_url =~ [^https:]\/\/ ]] &&
-    return 14 #bad option values
+    return 14 # bad option values
 
     #payload example
     echo "Raising pull request...
@@ -74,18 +74,24 @@ cmd_prequest(){
     local _ret=$?
     [ $_ret -gt 0 ] && ret=$_ret
 
-    #parse JSON to get PR url
+    # parse JSON to get PR url
     if [ -n "$response" ]; then
-        #TODO: parse JSON without dependencies
+        # TODO: parse JSON without dependencies
         local self_url=`echo "$response" | python -c "import json,sys;obj=json.load(sys.stdin);print obj['_links']['self']['href'];"`
         
         if [ -n "$self_url" ]; then
             local pr_num=`echo ${self_url##*/} | sed -e 's/\([0-9]+\)/\1/'`
-            #github url for this pr
+            # github url for this pr
             local pr_url="$domain/$repo/pull/$pr_num"
             
-            echo "$pr_url"
-            open -a "/Applications/Google Chrome.app" "$pr_url" || ret=$?
+            # open or display url
+            # TODO: add Linux/Mac detection
+            if [[ `uname -a` =~ Microsoft ]]; then
+                echo "$pr_url"
+            else
+                echo "$pr_url"
+                open -a "/Applications/Google Chrome.app" "$pr_url" || ret=$?
+            fi
         else
             ret=31
         fi
