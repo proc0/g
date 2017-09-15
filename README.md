@@ -1,17 +1,18 @@
 ### NAME
-    g -- git command line workflow toolkit 
+    g -- shell git cli cvcs sim 
+
 
 ### SYNOPSIS
-    g  [ COMMAND ] [ -OPTION <VALUE>... ]
-    g  [ h | v | s ]
-       [ ls | br | mr | up ] [ -t <TARGET> ]
-       [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
-       [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
-       [ pr | df ] [ -t* <TARGET> ] 
+    g  COMMAND <VALUE> -OPTION <VALUE>
+    g  [ h v i n:: g l: j: k s u m:: b: d:: c:: p:: y z ]
+    ::required
+    :optional
+
 
 ### DESCRIPTION
-    A set of git worfklows wrapped in shortcut commands.
-    
+    A shell git-CLI centralized VCS simulator script. Provides useful shortcuts by treating local and local-remote as a single synched branch.
+
+   
 ### COMMANDS
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
                             <TYPE A | TYPE B>~DEFAULT          
