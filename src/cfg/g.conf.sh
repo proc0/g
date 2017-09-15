@@ -1,3 +1,3 @@
-VERSION='v0.9.9.19'
+VERSION='v0.9.14.18'
 CFGNAME='g.conf.yml'
-OPTKEYS=':hvin::l:j:ksub:m::d::c::o::p::t::'
+OPTKEYS=':hvin::gl:j:ksum::b:d::c::p::yz'

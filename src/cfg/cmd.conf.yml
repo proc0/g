@@ -2,8 +2,8 @@
 settings:
   - ui:     i
 
-  - init:   g
   - new:    n source
+  - init:   g
 
   - list:   l source
   - jump:   j target

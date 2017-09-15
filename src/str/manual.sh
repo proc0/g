@@ -1,7 +1,8 @@
 #change IFS
 #to allow /n
-_ifs=$IFS
-export IFS=:
+# _ifs=$IFS
+# export IFS=:
+lift_IFS ':'
 x=${0##*/}
 #:<<proc0
 #        _,.---'---.,_
@@ -22,29 +23,23 @@ x=${0##*/}
 # proc0
 usage="
 ### NAME
-    $x -- git command line workflow toolkit 
+    $x -- shell git cli cvcs sim 
 
 
 ### SYNOPSIS
-    $x  [ INFO COMMAND ]
-       [ h | v | s ]
-        
-    $x  [ SHORTCUT COMMAND ] <VALUE>
-       [ -l | -b | -m | -u ] <TARGET | BRANCH | REPO/BRANCH>
-       [ -c | -k ] <COMMENT | NAME>
-
-    $x  [ EXPANDED COMMAND ] [ -option1 <VALUE1> -option2 <VALUE2>... ]
-       [ ls | br | mr | up ] [ -t <TARGET> ]
-       [ ci | co ] [ -c* <COMMENT> | -n <NAME> | -t <TARGET> ] 
-       [ in | cl ] [ -t* <TARGET> | -o <OUTPUT> ]
-       [ pr | df ] [ -t* <TARGET> ] 
+    $x  COMMAND <VALUE> -OPTION <VALUE>
+    $x  [ h v i n:: g l: j: k s u m:: b: d:: c:: p:: y z ]
+    ::required
+    :optional
 
 
 ### DESCRIPTION
-    A set of git worfklows wrapped in shortcut commands.
+    A shell git-CLI centralized VCS simulator script. Provides useful shortcuts by treating local and local-remote as a single synched branch.
 
 
 ### COMMANDS
+
+   TODO: update commands
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
                             <OPTION TYPE>--DEFAULT          
     ------------------------------------------------------------------------
