@@ -10,4 +10,4 @@
 . $SRC_DIR/cmd/merge.sh
 . $SRC_DIR/cmd/delete.sh
 . $SRC_DIR/cmd/commit.sh
-. $SRC_DIR/cmd/prequest.sh
+. $SRC_DIR/cmd/pullrq.sh

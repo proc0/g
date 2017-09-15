@@ -4,21 +4,21 @@ cmd_jump(){
     if [ -n "$stat_code" ]; then
         echo -ne "Error: branch not in sync.\nCommit, branch, or discard changes.\n"
     else
-        local _source=`kvget "source"`
+        local target=`kvget "target"`
         
-        if [ -n "$_source" ]; then
-            if [[ $_source =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
-                local branch=${_source#*\/} repo=${_source%\/*}
+        if [ -n "$target" ]; then
+            if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+                local branch=${target#*\/} repo=${target%\/*}
                 git checkout "$branch"
             else
-                local repo_exists="`find_repo "$_source"`"
+                local repo_exists="`find_repo "$target"`"
                 # if there's a repo match, list branches
                 if [ $? -eq 0 ]; then
                     echo -ne "`const TXT FETCHING_BRANCH`" &&
-                    list_branches "$_source"
+                    list_branches "$target"
                 else
                     # source must be a branch
-                    git checkout "$_source"
+                    git checkout "$target"
                 fi
             fi           
             cmd_update

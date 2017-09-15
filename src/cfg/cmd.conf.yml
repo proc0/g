@@ -1,16 +1,24 @@
 # command: alias/opt1key opt1val opt2key opt2val
 settings:
-  - ui:       ui       
-  - init:     i
-  - new:      n   repo_url
-  - list:     l   source
-  - jump:     j   source
-  - back:     k 
-  - status:   s
-  - update:   u
-  - branch:   b   target
-  - merge:    m   source
-  - delete:   d   source
-  - commit:   c   comment
-  - checkout: o   source  t   target
-  - prequest: p   target  c   comment
+  - ui:     i
+
+  - init:   g
+  - new:    n source
+
+  - list:   l source
+  - jump:   j target
+  - back:   k 
+  
+  - status: s
+  - update: u
+  - merge:  m source
+  
+  - branch: b target
+  - delete: d target
+  - commit: c comment
+  - pullrq: p source c comment
+  
+  - redo:   y
+  - undo:   z
+
+  

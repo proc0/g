@@ -1,7 +1,7 @@
-cmd_prequest(){
+cmd_pullrq(){
     local ret=0
     local msg=`kvget comment`
-    local target=`kvget target`
+    local t_base=`kvget "source"`
     local user=`get_username`
     local repo=`get_remote_repo_name`
     local branch=`get_current_branch`
@@ -24,12 +24,12 @@ cmd_prequest(){
 
     local base=''
     # TODO: cross repo pull requests
-    if [ -n "$target" ]; then 
-        if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
-            t_branch=${target#*/}
-            # t_repo=${target%/*}
+    if [ -n "$t_base" ]; then 
+        if [[ $t_base =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
+            t_branch=${t_base#*/}
+            # t_repo=${t_base%/*}
         else
-            t_branch=$target
+            t_branch=$t_base
             # t_repo=`get_current_repo`
         fi
         base=$t_branch
