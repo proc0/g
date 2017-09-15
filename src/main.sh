@@ -5,14 +5,14 @@ main() {
     
     # gitless commands
     [ -n "$(show_info $cmd)" ] &&
-        show_info "$cmd" | 
+        show_info "$cmd" 'true' | 
             more && exit 0
 
     # check runtime dependencies
-    safe_run "envtest \"`echo $@`\""
+    safe_run "test_env \"`echo $@`\""
     # 
     clear_options
-    parse_yml "$CONFIG" 'cfg_' &&
+    parse_config "$CONFIG" 'cfg_' &&
     parse_options `escape_opts "$opts"` &&
     parse_command "$cmd" || ret=$?
 
@@ -28,9 +28,10 @@ main() {
 
 # show_info :: Command -> IO Int
 show_info(){
-    case "$@" in 
-        h|-h|help) . $MANUAL && 
-            echo "$usage";;
+    case "$1" in 
+        h|-h|help) [ -n "$2" ] && 
+            (. $MANUAL && echo "$usage") ||
+            echo 'true';;
         v|-v|version) echo "$VERSION";;
     esac
 }
@@ -59,7 +60,7 @@ parse_options() {
 parse_command(){
     local ret=0 cmd=$1 cmd_len=0
     # get command list
-    parse_yml "$CMD_CONFIG" 'cmd_'
+    parse_config "$CMD_CONFIG" 'cmd_'
     cmd_len=${#cmd_settings[@]}
     # iterate and configure commands
     while [ $cmd_len -gt 0 -o $cmd_len -eq 0 ]; do

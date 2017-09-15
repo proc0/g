@@ -1,14 +1,34 @@
-# set_option :: Key -> Value -> ErrorCode -> IO()
-set_option(){
-    local ret=0
-    local key=$1
-    local val=$2
-    # no option value
-    [ -z "$val" ] && ret=14 
-    # echo "setting option $1 to $val"
-    # replace () with spaces
-    kvset "$key" "${val//\(\)/ }"
-    return $ret
+# check_remote :: Command -> IO Int
+rem_cache=""
+check_remote(){
+    local rem_list
+    local rem_name="$1"
+    #cach git remote show to avoid multiple calls
+    [ -n "$rem_cache" ] && rem_list=$rem_cache \
+    || rem_cache=`get_remotes` && rem_list=(`echo "$rem_cache"`)
+
+    local exists=1 #1 is FALSE
+    local rem_len=${#rem_list[@]}
+    #iterate through git remotes and check names
+    while [ $rem_len -gt 0 -a $exists -eq 1 ]; do
+        local idx=$((rem_len-1))
+        if [ $idx -gt 0 -o $idx -eq 0 ]; then 
+            local rem_i="${rem_list[$idx]}"
+            if [[ "$rem_name" == "$rem_i" ]]; then
+                exists=0 #0 is TRUE
+            fi
+        fi
+        rem_len=$idx
+    done
+    return $exists
+}
+
+# clear_options :: IO () -> IO Int
+clear_options(){
+    # TODO: abstract option exceptions that don't clear
+    local prev_branch=`kvget prev_source`
+    kvclear
+    kvset prev_source "$prev_branch"
 }
 
 # escape_opts :: Options -> SafeOptions
@@ -31,12 +51,28 @@ escape_opts(){
     echo "$opts"
 }
 
-# clear_options :: () -> IO()
-clear_options(){
-    # TODO: abstract option exceptions that don't clear
-    local prev_branch=`kvget prev_source`
-    kvclear
-    kvset prev_source "$prev_branch"
+lift_IFS(){
+    _ifs=$IFS
+    if [ -n "$1" ]; then
+        export IFS="$1"
+    elif [ -n "$_ifs" ]; then
+        export IFS=$_ifs
+    else
+        unset IFS
+    fi
+}
+
+# set_option :: Key -> Value -> ErrorCode -> IO()
+set_option(){
+    local ret=0
+    local key=$1
+    local val=$2
+    # no option value
+    [ -z "$val" ] && ret=14 
+    # echo "setting option $1 to $val"
+    # replace () with spaces
+    kvset "$key" "${val//\(\)/ }"
+    return $ret
 }
 
 get_status(){
@@ -82,75 +118,8 @@ get_current_repo(){
     fi
     echo "$repo_name"
 }
-#check command hard dependencies
-#envtest :: IO() -> ERROR_LABEL
-envtest(){
-    local ret=0
 
-    #exceptions - no environment needed
-    [[ "$1" == 'n' ]] && return 0
 
-    #check config file
-    [ -f "$CONFIG" ] || ret=11 &&
-    #check that current dir is a git directory
-    git status 2>/dev/null 1>&/dev/null || ret=10 &&
-    #check remote connection: TODO use a nuetral command
-    git fetch 2>/dev/null 1>&/dev/null || ret=12
-
-    [ $ret -gt 0 ] && return $ret
-
-    #TODO consolidate status 
-    #check with get_status
-    local _stat=`get_status`
-    #HEAD is detached
-    [[ $_stat =~ .*DETACHED.* ]] && ret=0
-
-    return $ret
-}
-
-env_ready(){
-    local err_code=0
-    check_env || err_code=$?
-
-    [ $err_code -gt 0 ] && oops "$err_code" "$@"
-
-    return 0
-}
-
-lift_IFS(){
-    _ifs=$IFS
-    if [ -n "$1" ]; then
-        export IFS="$1"
-    elif [ -n "$_ifs" ]; then
-        export IFS=$_ifs
-    else
-        unset IFS
-    fi
-}
-
-rem_cache=""
-check_remote(){
-    local rem_list
-    local rem_name="$1"
-    #cach git remote show to avoid multiple calls
-    [ -n "$rem_cache" ] && rem_list=$rem_cache \
-    || rem_cache=`get_remotes` && rem_list=(`echo "$rem_cache"`)
-
-    local exists=1 #1 is FALSE
-    local rem_len=${#rem_list[@]}
-    #iterate through git remotes and check names
-    while [ $rem_len -gt 0 -a $exists -eq 1 ]; do
-        local idx=$((rem_len-1))
-        if [ $idx -gt 0 -o $idx -eq 0 ]; then 
-            local rem_i="${rem_list[$idx]}"
-            if [[ "$rem_name" == "$rem_i" ]]; then
-                exists=0 #0 is TRUE
-            fi
-        fi
-        rem_len=$idx
-    done
-    return $exists
-}
 
 get_remotes(){
     local rems=""
@@ -165,7 +134,7 @@ get_username(){
     echo $user
 }
 
-parse_yml(){
+parse_config(){
     local ret=0 path=$1 prefix=$2
     eval $(parse_yaml "$path" "$prefix") || ret=$?
     return $ret
@@ -206,4 +175,30 @@ safe_run() {
         ) &     
         wait $child
     )
+}
+
+#check command hard dependencies
+#test_env :: IO() -> ERROR_LABEL
+test_env(){
+    local ret=0
+
+    #exceptions - no environment needed
+    [[ "$1" == 'n' ]] && return 0
+
+    #check config file
+    [ -f "$CONFIG" ] || ret=11 &&
+    #check that current dir is a git directory
+    git status 2>/dev/null 1>&/dev/null || ret=10 &&
+    #check remote connection: TODO use a nuetral command
+    git fetch 2>/dev/null 1>&/dev/null || ret=12
+
+    [ $ret -gt 0 ] && return $ret
+
+    #TODO consolidate status 
+    #check with get_status
+    local _stat=`get_status`
+    #HEAD is detached
+    [[ $_stat =~ .*DETACHED.* ]] && ret=0
+
+    return $ret
 }
