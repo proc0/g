@@ -22,8 +22,8 @@ x=${0##*/}
 #        '*($(_|_),)-'
 # proc0
 usage="
-### NAME
-    $x -- shell git cli cvcs sim 
+### $x
+    shell git cli cvcs sim 
 
 
 ### SYNOPSIS
@@ -38,6 +38,13 @@ usage="
 
 
 ### COMMANDS
+
+ NAME          | ALIAS  | OPTIONS  | DESCRIPTION  
+ ------------- |:------:|:--------:| -----------:
+ col 3 is      | h|-h   |          | Show this.
+ col 2 is      | v|-v   |          | Really lonasg oasid foais dfoi asodif oaisd joiasdf
+ zebra stripes | s      |          |
+
 
    TODO: update commands
     NAME        ALIAS       -o(option)*[required]       DESCRIPTION 
