@@ -7,10 +7,9 @@ SRC_EXE=${BASH_SOURCE[0]}
 ROOT_DIR=`dirname "$SRC_EXE"`
 SRC_DIR="$ROOT_DIR/src"
 CFG_DIR="$SRC_DIR/cfg"
-STR_DIR="$SRC_DIR/str"
 
-# load global consts
-. $STR_DIR/static.sh
+# load global resources
+. $SRC_DIR/lib/static.sh
 . $CFG_DIR/g.conf.sh
 
 # set resource paths
@@ -22,7 +21,7 @@ STR_DIR="$SRC_DIR/str"
 # command config
 CMD_CONFIG=$CFG_DIR/cmd.conf.yml
 # help manual
-MANUAL=$STR_DIR/manual.sh
+MANUAL=$ROOT_DIR/README.md
 
 # load subroutines
 # ----------------

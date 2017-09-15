@@ -30,7 +30,7 @@ main() {
 show_info(){
     case "$1" in 
         h|-h|help) [ -n "$2" ] && 
-            (. $MANUAL && echo "$usage") ||
+            (echo -ne "`cat $MANUAL`") ||
             echo 'true';;
         v|-v|version) echo "$VERSION";;
     esac
