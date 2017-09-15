@@ -16,7 +16,7 @@
 ### COMMANDS
 
  NAME          | ALIAS  | OPTIONS  | DESCRIPTION  
- ------------- |:------:|:--------:| -----------:
+ ------------- |:------:|:--------:| -----------
  col 3 is      | h|-h   |          | Show this.
  col 2 is      | v|-v   |          | Really lonasg oasid foais dfoi asodif oaisd joiasdf
  zebra stripes | s      |          |
