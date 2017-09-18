@@ -1,12 +1,12 @@
 g
 =
-> shell git cli cvcs sim 
+> a unix-shell git-cli cvcs toolkit 
 
 
 ### SYNOPSIS
 | form | COMMAND     | COMMAND [VALUE]                        | COMMAND [VALUE] -OPTION [VALUE]     |
 |:----:|:------------|:---------------------------------------|:------------------------------------|
-| g    | hvigksuyz   | c [COMMENT]<br>nljmbd [SOURCE/TARGET]  | p \<SOURCE> -c \<COMMENT>           |
+| g    | hvigksuyz   | c [COMMENT]<br>nljmbd [SOURCE/TARGET]  | p [SOURCE] -c [COMMENT]             |
 
 
 ### DESCRIPTION
