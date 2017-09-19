@@ -26,7 +26,7 @@ cmd_jump(){
             echo -ne "`const TXT FETCHING_BRANCH`" &&
             list_branches
         fi
-        kvset "prev_source" "`get_current_repo`/`get_current_branch`"
+        kvset "prev_target" "`get_current_repo`/`get_current_branch`"
     fi
     
     return $?
@@ -70,8 +70,7 @@ list_branches(){
             select_branch=${select_entry[1]};
         # checkout and try to update branch
         if [ -n "$select_branch" ]; then
-            kvset "prev_source" "`get_current_repo`/`get_current_branch`"
-            kvset "source" "$_source"
+            kvset "prev_target" "`get_current_repo`/`get_current_branch`"
             git checkout "$select_branch"
             cmd_update
         else

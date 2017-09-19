@@ -10,6 +10,8 @@ cmd_branch(){
 
     if [ -n "$transfer" ];then
         local target=`kvget target`
+        local cur_repo=`get_current_repo`
+        kvset "prev_target" "$cur_repo/`get_current_branch`"
 
         if [ -n "$target" ]; then
             if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
@@ -18,13 +20,13 @@ cmd_branch(){
                 git checkout -b "$branch"
                 git push -u "$repo" "$branch"
             else
-                local repo=`get_current_repo`                
+                local repo=$cur_repo                
                 git checkout -b "$target"
                 git push -u "$repo" "$target"
             fi
         else
             echo -ne "`const TXT FETCHING_BRANCH`" &&
-            list_branches "`get_current_repo`"            
+            list_branches "$cur_repo"            
         fi
 
         cmd_status
