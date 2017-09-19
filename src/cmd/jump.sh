@@ -13,7 +13,7 @@ cmd_jump(){
             else
                 local repo_exists="`find_repo "$target"`"
                 # if there's a repo match, list branches
-                if [ $? -eq 0 ]; then
+                if [[ $? -eq 0 ]]; then
                     echo -ne "`const TXT FETCHING_BRANCH`" &&
                     list_branches "$target"
                 else
@@ -24,7 +24,7 @@ cmd_jump(){
             cmd_update
         else
             echo -ne "`const TXT FETCHING_BRANCH`" &&
-            list_branches "`get_current_repo`"
+            list_branches
         fi
         kvset "prev_source" "`get_current_repo`/`get_current_branch`"
     fi
@@ -36,7 +36,7 @@ list_branches(){
     local ret=0 \
         # setup
         cur_repo=$1 \
-        branches=`cmd_list_branches` \
+        branches=`cmd_list_branches "$1"` \
         br_arr=(`echo $branches`) \
         br_len=${#br_arr[@]} \
         # create new list to enumerate 
@@ -87,7 +87,7 @@ find_repo(){
     local ret=0
     local repo_len=${#cfg_remotes[@]}
     local found=1
-    local match=''
+    local _repo=$1
     #update cfg_remotes if cfg_remotes exists
     while [ $repo_len -gt 0 -o $repo_len -eq 0 ]; do
         local idx=$((repo_len-1))
@@ -97,17 +97,19 @@ find_repo(){
             #note: 2nd field may contain delim (in url)
             #local url=$(echo `cut -d ':' -f 2,3,4 <<< $pair`)
             local repo=$(echo `cut -d ':' -f 1 <<< $pair`)
-            local remote_exists=`check_remote "$repo"`
-            #check return code to
-            #prevent it from propagating
-            if [[ $remote_exists == 0 ]]; then
-                found=0
-                match="$repo"
+
+            if [[ "$_repo" == "$repo" ]]; then
+                local remote_exists=`check_remote "$repo"`
+                #check return code to
+                #prevent it from propagating
+                if [[ $remote_exists == 0 ]]; then
+                    found=0
+                fi
             fi
         fi
         #countdown
         repo_len=$idx
     done
 
-    echo "$match"
+    return $found
 }
