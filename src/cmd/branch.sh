@@ -17,8 +17,13 @@ cmd_branch(){
             if [[ $target =~ [a-zA-Z0-9]\/[a-zA-Z0-9] ]]; then
                 local repo="${target%\/*}"
                 local branch="${target#*\/}"
-                git checkout -b "$branch"
-                git push -u "$repo" "$branch"
+
+                if [ -n "$transfer" ]; then
+                    git checkout "$branch"
+                else
+                    git checkout -b "$branch"
+                    git push -u "$repo" "$branch"
+                fi
             else
                 local repo=$cur_repo                
                 git checkout -b "$target"
