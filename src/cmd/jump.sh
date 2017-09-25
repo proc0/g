@@ -33,6 +33,7 @@ cmd_jump(){
 }
 
 list_branches(){
+    set +x
     local ret=0 \
         # setup
         cur_repo=$1 \
